@@ -1,0 +1,2448 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🧭 LA BOUSSOLE — Trouve ta voie, construis ton avenir</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#05070d;
+    --surface:rgba(255,255,255,.035);
+    --surface-2:rgba(255,255,255,.06);
+    --border:rgba(255,255,255,.08);
+    --border-hi:rgba(255,255,255,.14);
+    --text:#eef2ff;
+    --muted:#8b95b3;
+    --dim:#5a6382;
+    --primary:#7c3aed;
+    --primary-glow:rgba(124,58,237,.4);
+    --secondary:#06b6d4;
+    --accent:#f59e0b;
+    --success:#22c55e;
+    --danger:#f43f5e;
+    --radius-xl:28px;
+    --radius:20px;
+    --radius-sm:14px;
+    --ease:cubic-bezier(.16,1,.3,1);
+    --ease-bounce:cubic-bezier(.34,1.56,.64,1);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth; scroll-padding-top:70px}
+  body{
+    font-family:'Inter',system-ui,sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    min-height:100vh;
+    padding:16px;
+    line-height:1.7;
+    overflow-x:hidden;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  /* ═══════ BACKGROUND ═══════ */
+  .bg-orbs{position:fixed;inset:0;z-index:-2;overflow:hidden;pointer-events:none}
+  .orb{
+    position:absolute;border-radius:50%;filter:blur(100px);opacity:.3;
+    animation:orbFloat 25s ease-in-out infinite alternate;will-change:transform;
+  }
+  .orb:nth-child(1){width:600px;height:600px;background:#7c3aed;top:-200px;left:-150px;animation-duration:22s}
+  .orb:nth-child(2){width:500px;height:500px;background:#06b6d4;bottom:-150px;right:-100px;animation-duration:28s;animation-delay:-5s}
+  .orb:nth-child(3){width:400px;height:400px;background:#ec4899;top:40%;left:50%;animation-duration:32s;animation-delay:-10s;opacity:.18}
+  @keyframes orbFloat{
+    0%{transform:translate(0,0) scale(1)}
+    50%{transform:translate(70px,-50px) scale(1.18)}
+    100%{transform:translate(-50px,60px) scale(.88)}
+  }
+  .grid-overlay{
+    position:fixed;inset:0;z-index:-1;pointer-events:none;
+    background-image:
+      linear-gradient(rgba(255,255,255,.015) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(255,255,255,.015) 1px,transparent 1px);
+    background-size:60px 60px;
+    mask-image:radial-gradient(ellipse 80% 60% at 50% 40%,#000 40%,transparent 100%);
+    -webkit-mask-image:radial-gradient(ellipse 80% 60% at 50% 40%,#000 40%,transparent 100%);
+  }
+
+  .app{
+    max-width:1060px;margin:0 auto;
+    background:rgba(10,14,26,.72);
+    backdrop-filter:blur(32px) saturate(1.4);
+    -webkit-backdrop-filter:blur(32px) saturate(1.4);
+    border:1px solid var(--border);
+    border-radius:var(--radius-xl);
+    box-shadow:0 40px 100px rgba(0,0,0,.6);
+    overflow:visible;
+    position:relative;
+  }
+  .app::before{
+    content:"";position:absolute;top:0;left:10%;right:10%;height:1px;
+    background:linear-gradient(90deg,transparent,rgba(124,58,237,.6),rgba(6,182,212,.6),transparent);
+    border-radius:var(--radius-xl) var(--radius-xl) 0 0;
+  }
+
+  /* ═══════ HERO ═══════ */
+  .hero{padding:56px 32px 44px;text-align:center;position:relative}
+  .hero-glow{
+    position:absolute;top:-50%;left:50%;transform:translateX(-50%);
+    width:500px;height:400px;border-radius:50%;
+    background:radial-gradient(circle,rgba(124,58,237,.25),transparent 70%);
+    pointer-events:none;filter:blur(40px);
+  }
+  .hero-content{position:relative;z-index:1}
+  .hero-badge{
+    display:inline-flex;align-items:center;gap:8px;
+    padding:7px 18px;border-radius:30px;
+    background:rgba(124,58,237,.12);
+    border:1px solid rgba(124,58,237,.3);
+    color:#c4b5fd;font-size:.72rem;font-weight:600;
+    letter-spacing:2px;text-transform:uppercase;margin-bottom:24px;
+    font-family:'JetBrains Mono',monospace;
+  }
+  .hero-badge::before{
+    content:"";width:6px;height:6px;border-radius:50%;
+    background:var(--success);box-shadow:0 0 8px var(--success);
+    animation:pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(1.4)}}
+  .hero h1{
+    font-family:'Syne',sans-serif;
+    font-size:clamp(2rem,5vw,3.2rem);
+    font-weight:800;letter-spacing:-.03em;line-height:1.1;
+    background:linear-gradient(135deg,#fff 0%,#c4b5fd 50%,#67e8f9 100%);
+    -webkit-background-clip:text;background-clip:text;
+    -webkit-text-fill-color:transparent;
+    margin-bottom:14px;
+  }
+  .hero .tagline{
+    font-size:1rem;color:var(--muted);
+    max-width:560px;margin:0 auto 20px;
+  }
+  .hero .motto{
+    display:inline-block;padding:12px 24px;
+    background:linear-gradient(135deg,rgba(124,58,237,.1),rgba(6,182,212,.08));
+    border:1px solid rgba(124,58,237,.2);
+    border-radius:14px;font-weight:500;
+    color:#e9d5ff;font-size:.88rem;
+  }
+  .hero-stats{
+    display:flex;justify-content:center;gap:32px;margin-top:30px;flex-wrap:wrap;
+  }
+  .hero-stat{text-align:center}
+  .hero-stat .num{
+    font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:800;
+    background:linear-gradient(135deg,var(--primary),var(--secondary));
+    -webkit-background-clip:text;background-clip:text;
+    -webkit-text-fill-color:transparent;line-height:1;
+  }
+  .hero-stat .lbl{
+    font-size:.68rem;color:var(--dim);text-transform:uppercase;
+    letter-spacing:1.5px;margin-top:4px;font-weight:600;
+  }
+
+  /* ═══════ PROGRESS (non-sticky, cleaner) ═══════ */
+  .progress-wrap{
+    padding:0 32px 20px;
+    display:flex;align-items:center;gap:14px;
+  }
+  .progress-track{
+    flex:1;height:4px;background:rgba(255,255,255,.05);
+    border-radius:10px;overflow:hidden;
+  }
+  .progress-fill{
+    height:100%;width:0%;border-radius:10px;
+    background:linear-gradient(90deg,var(--primary),var(--secondary),var(--accent));
+    background-size:300% 100%;
+    animation:shimmer 4s linear infinite;
+    transition:width .6s var(--ease);
+    box-shadow:0 0 12px var(--primary-glow);
+  }
+  @keyframes shimmer{0%{background-position:300% 0}100%{background-position:-300% 0}}
+  .progress-label{
+    font-size:.68rem;font-weight:600;color:var(--muted);
+    white-space:nowrap;font-family:'JetBrains Mono',monospace;
+    letter-spacing:.5px;
+  }
+
+  .content{padding:20px 32px 40px}
+
+  /* ═══════ STEPS ═══════ */
+  .step{display:none}
+  .step.active{display:block}
+  h2.step-title{
+    font-family:'Syne',sans-serif;
+    font-size:1.4rem;font-weight:700;
+    color:var(--text);margin-bottom:6px;
+    display:flex;align-items:center;gap:12px;
+    letter-spacing:-.02em;
+  }
+  .step-num{
+    display:inline-flex;align-items:center;justify-content:center;
+    width:34px;height:34px;border-radius:10px;
+    background:linear-gradient(135deg,var(--primary),var(--secondary));
+    color:#fff;font-size:.8rem;font-weight:700;
+    font-family:'JetBrains Mono',monospace;
+    flex-shrink:0;
+  }
+  .step-subtitle{color:var(--muted);margin-bottom:24px;font-size:.9rem}
+
+  /* ═══════ QUESTIONS ═══════ */
+  .question{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:20px;margin-bottom:14px;
+    transition:border-color .25s;
+  }
+  .question:hover{border-color:var(--border-hi)}
+  .question label.q-label{
+    display:block;font-weight:600;color:var(--text);
+    margin-bottom:14px;font-size:.9rem;
+  }
+  .options{display:flex;flex-direction:column;gap:8px}
+  .option{
+    display:flex;align-items:center;gap:12px;
+    padding:12px 15px;
+    background:rgba(255,255,255,.02);
+    border:1px solid var(--border);
+    border-radius:var(--radius-sm);
+    cursor:pointer;transition:all .2s var(--ease);
+    font-size:.88rem;
+  }
+  .option:hover{
+    background:var(--surface-2);
+    border-color:rgba(124,58,237,.3);
+  }
+  .option input{display:none}
+  .option:has(input:checked){
+    background:linear-gradient(135deg,rgba(124,58,237,.15),rgba(6,182,212,.1));
+    border-color:var(--primary);
+  }
+  .option:has(input:checked) .option-letter{
+    background:linear-gradient(135deg,var(--primary),var(--secondary));
+    color:#fff;border-color:transparent;
+  }
+  .option:has(input:checked) .option-content{color:var(--text);font-weight:600}
+  .option-content{flex:1;color:var(--muted)}
+  .option-letter{
+    display:inline-flex;align-items:center;justify-content:center;
+    width:26px;height:26px;border-radius:8px;
+    background:rgba(255,255,255,.05);
+    border:1px solid var(--border);
+    color:var(--dim);font-weight:700;font-size:.75rem;
+    flex-shrink:0;font-family:'JetBrains Mono',monospace;
+    transition:all .2s;
+  }
+
+  /* ═══════ SLIDER ═══════ */
+  .slider-wrap{display:flex;flex-direction:column;gap:12px}
+  input[type="range"]{
+    width:100%;height:6px;border-radius:10px;
+    background:linear-gradient(90deg,var(--danger),var(--accent),var(--success));
+    outline:none;-webkit-appearance:none;appearance:none;cursor:pointer;
+  }
+  input[type="range"]::-webkit-slider-thumb{
+    -webkit-appearance:none;width:24px;height:24px;border-radius:50%;
+    background:#fff;border:3px solid var(--primary);cursor:pointer;
+    box-shadow:0 0 16px var(--primary-glow);
+  }
+  input[type="range"]::-moz-range-thumb{
+    width:24px;height:24px;border-radius:50%;
+    background:#fff;border:3px solid var(--primary);cursor:pointer;
+  }
+  .slider-value{
+    text-align:center;font-weight:700;
+    font-family:'JetBrains Mono',monospace;
+    color:#c4b5fd;font-size:1.2rem;
+  }
+
+  /* ═══════ BUTTONS ═══════ */
+  .btn{
+    display:inline-flex;align-items:center;gap:8px;
+    padding:13px 26px;border:none;border-radius:var(--radius-sm);
+    font-size:.9rem;font-weight:600;cursor:pointer;
+    transition:all .25s var(--ease);font-family:'Inter',sans-serif;
+    position:relative;
+  }
+  .btn-primary{
+    background:linear-gradient(135deg,var(--primary),#a855f7);
+    color:#fff;box-shadow:0 6px 20px var(--primary-glow);
+  }
+  .btn-primary:hover{transform:translateY(-2px);box-shadow:0 10px 30px var(--primary-glow)}
+  .btn-accent{
+    background:linear-gradient(135deg,var(--accent),#f97316);
+    color:#fff;box-shadow:0 6px 20px rgba(245,158,11,.3);
+  }
+  .btn-accent:hover{transform:translateY(-2px)}
+  .btn-ghost{
+    background:var(--surface);color:var(--muted);
+    border:1px solid var(--border);
+  }
+  .btn-ghost:hover{
+    background:var(--surface-2);
+    border-color:rgba(124,58,237,.3);
+    color:var(--text);
+  }
+  .btn-danger{
+    background:linear-gradient(135deg,var(--danger),#e11d48);
+    color:#fff;box-shadow:0 6px 20px rgba(244,63,94,.3);
+  }
+  .btn-danger:hover{transform:translateY(-2px)}
+  .btn:disabled{opacity:.4;cursor:not-allowed;transform:none!important}
+
+  /* ═══════ BUTTON ROW (non-sticky, cleaner) ═══════ */
+  .btn-row{
+    display:flex;justify-content:space-between;gap:12px;
+    margin-top:28px;flex-wrap:wrap;
+  }
+  .btn-row.center{justify-content:center}
+
+  /* ═══════ CARDS ═══════ */
+  .result-card{
+    background:linear-gradient(135deg,rgba(124,58,237,.07),rgba(6,182,212,.04));
+    border:1px solid rgba(124,58,237,.15);
+    border-radius:var(--radius);padding:22px;margin-bottom:14px;
+  }
+  .result-card h3{
+    color:#c4b5fd;margin-bottom:12px;
+    font-size:.95rem;font-weight:700;
+    font-family:'Syne',sans-serif;
+    display:flex;align-items:center;gap:8px;
+  }
+
+  .profile-badge{
+    display:inline-flex;align-items:center;gap:10px;
+    padding:12px 24px;border-radius:30px;
+    background:linear-gradient(135deg,var(--primary),var(--secondary));
+    color:#fff;font-weight:700;font-size:1rem;
+    box-shadow:0 6px 20px var(--primary-glow);
+    margin-bottom:14px;
+    font-family:'Syne',sans-serif;
+  }
+
+  ul.clean{list-style:none}
+  ul.clean li{
+    padding:6px 0 6px 24px;position:relative;
+    font-size:.88rem;color:var(--muted);
+  }
+  ul.clean li::before{
+    content:"▸";position:absolute;left:0;
+    color:var(--secondary);font-weight:700;
+  }
+
+  /* ═══════ CHECKBOX ═══════ */
+  .checkbox-list{display:grid;gap:8px}
+  .check-item{
+    display:flex;align-items:center;gap:12px;
+    padding:13px 16px;
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:var(--radius-sm);
+    cursor:pointer;transition:all .2s;
+  }
+  .check-item:hover{background:var(--surface-2)}
+  .check-item:has(input:checked){
+    border-color:var(--danger);
+    background:linear-gradient(135deg,rgba(244,63,94,.1),rgba(244,63,94,.04));
+  }
+  .check-item input{
+    width:18px;height:18px;accent-color:var(--danger);
+    cursor:pointer;flex-shrink:0;
+  }
+  .check-item span{flex:1;font-size:.88rem;color:var(--muted)}
+  .check-item:has(input:checked) span{color:var(--text)}
+
+  /* ═══════ COUNTRY ═══════ */
+  .country-search{
+    width:100%;padding:13px 16px;
+    background:var(--surface);color:var(--text);
+    border:1px solid var(--border);
+    border-radius:var(--radius-sm);
+    font-family:'Inter',sans-serif;font-size:.9rem;
+    margin-bottom:16px;transition:border-color .2s;
+  }
+  .country-search:focus{
+    outline:none;border-color:var(--primary);
+    box-shadow:0 0 20px rgba(124,58,237,.15);
+  }
+  .country-search::placeholder{color:var(--dim)}
+  .country-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(140px,1fr));
+    gap:10px;margin-bottom:20px;
+  }
+  .country-card{
+    padding:14px 10px;text-align:center;
+    background:var(--surface);
+    border:2px solid var(--border);
+    border-radius:var(--radius-sm);
+    cursor:pointer;transition:all .25s var(--ease);
+    position:relative;
+  }
+  .country-card:hover{
+    background:var(--surface-2);
+    border-color:rgba(124,58,237,.3);
+    transform:translateY(-3px);
+  }
+  .country-card.selected{
+    background:linear-gradient(135deg,rgba(124,58,237,.2),rgba(6,182,212,.12));
+    border-color:var(--primary);
+    box-shadow:0 0 24px rgba(124,58,237,.25);
+  }
+  .country-card .flag{font-size:1.6rem;margin-bottom:4px;display:block;line-height:1}
+  .country-card .name{font-weight:600;font-size:.8rem;color:var(--text)}
+  .country-card .currency{
+    font-size:.65rem;color:var(--dim);margin-top:2px;
+    font-family:'JetBrains Mono',monospace;
+  }
+  .country-card.selected::after{
+    content:"✓";position:absolute;top:6px;right:8px;
+    width:16px;height:16px;border-radius:50%;
+    background:linear-gradient(135deg,var(--primary),var(--secondary));color:#fff;
+    font-size:.55rem;display:flex;align-items:center;justify-content:center;
+    font-weight:700;
+  }
+
+  /* ═══════ COUNTRY PANEL ═══════ */
+  .country-panel{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:22px;margin-bottom:20px;
+  }
+  .country-panel h3{
+    color:#c4b5fd;font-size:.95rem;font-weight:700;
+    font-family:'Syne',sans-serif;margin-bottom:10px;
+    display:flex;align-items:center;gap:8px;
+  }
+  .country-panel p{font-size:.86rem;color:var(--muted);margin-bottom:12px}
+  .sector-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+  .sector-tags span{
+    padding:5px 12px;border-radius:20px;
+    background:rgba(124,58,237,.12);
+    border:1px solid rgba(124,58,237,.2);
+    font-size:.73rem;color:#c4b5fd;font-weight:500;
+  }
+  .info-note{
+    padding:12px 16px;border-radius:12px;
+    background:rgba(6,182,212,.06);
+    border-left:3px solid var(--secondary);
+    font-size:.84rem;color:var(--muted);
+  }
+
+  /* ═══════ BOURSES DÉTAILLÉES ═══════ */
+  .bourse-detailed{
+    background:linear-gradient(135deg,rgba(245,158,11,.06),rgba(245,158,11,.02));
+    border:1px solid rgba(245,158,11,.18);
+    border-radius:var(--radius);
+    padding:20px;margin-bottom:14px;
+    transition:all .25s var(--ease);
+    position:relative;
+    overflow:hidden;
+  }
+  .bourse-detailed::before{
+    content:"";position:absolute;left:0;top:0;bottom:0;width:3px;
+    background:linear-gradient(180deg,var(--accent),#f97316);
+  }
+  .bourse-detailed:hover{
+    border-color:rgba(245,158,11,.35);
+    transform:translateX(4px);
+    box-shadow:0 8px 30px rgba(245,158,11,.08);
+  }
+  .bourse-header{
+    display:flex;align-items:flex-start;gap:12px;
+    margin-bottom:12px;
+  }
+  .bourse-icon{
+    width:40px;height:40px;border-radius:10px;
+    background:linear-gradient(135deg,rgba(245,158,11,.2),rgba(245,158,11,.1));
+    border:1px solid rgba(245,158,11,.25);
+    display:flex;align-items:center;justify-content:center;
+    font-size:1.1rem;flex-shrink:0;
+  }
+  .bourse-title-wrap{flex:1}
+  .bourse-name{
+    font-weight:700;color:#fcd34d;font-size:.95rem;
+    font-family:'Syne',sans-serif;margin-bottom:3px;
+  }
+  .bourse-type{
+    font-size:.68rem;color:var(--dim);
+    text-transform:uppercase;letter-spacing:1px;
+    font-family:'JetBrains Mono',monospace;font-weight:600;
+  }
+  .bourse-amount-badge{
+    padding:5px 12px;border-radius:8px;
+    background:rgba(34,197,94,.12);
+    border:1px solid rgba(34,197,94,.2);
+    color:#86efac;font-weight:700;font-size:.75rem;
+    font-family:'JetBrains Mono',monospace;
+    white-space:nowrap;flex-shrink:0;
+  }
+  .bourse-desc{
+    font-size:.85rem;color:var(--muted);
+    margin-bottom:14px;line-height:1.7;
+  }
+  .bourse-details-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+    gap:10px;margin-bottom:12px;
+  }
+  .bourse-detail{
+    background:rgba(255,255,255,.02);
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:10px 12px;
+  }
+  .bourse-detail .lbl{
+    font-size:.65rem;color:var(--dim);
+    text-transform:uppercase;letter-spacing:1px;
+    font-family:'JetBrains Mono',monospace;font-weight:600;
+    margin-bottom:4px;
+  }
+  .bourse-detail .val{
+    font-size:.82rem;color:var(--text);font-weight:500;
+  }
+  .bourse-coverage{
+    display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;
+  }
+  .bourse-coverage .cov-tag{
+    padding:3px 10px;border-radius:6px;
+    background:rgba(34,197,94,.1);
+    border:1px solid rgba(34,197,94,.15);
+    color:#86efac;font-size:.7rem;font-weight:500;
+  }
+  .bourse-link{
+    display:inline-flex;align-items:center;gap:6px;
+    margin-top:12px;padding:8px 14px;
+    background:rgba(245,158,11,.1);
+    border:1px solid rgba(245,158,11,.2);
+    border-radius:8px;color:#fcd34d;
+    font-size:.78rem;font-weight:600;text-decoration:none;
+    transition:all .2s;
+  }
+  .bourse-link:hover{
+    background:rgba(245,158,11,.2);
+    transform:translateX(3px);
+  }
+
+  /* ═══════ FILTERS ═══════ */
+  .filter-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
+  .filter-btn{
+    padding:7px 16px;border-radius:20px;
+    border:1px solid var(--border);
+    background:var(--surface);
+    cursor:pointer;font-size:.75rem;font-weight:600;
+    transition:all .2s;font-family:inherit;
+    color:var(--muted);
+  }
+  .filter-btn.active,.filter-btn:hover{
+    background:linear-gradient(135deg,var(--primary),var(--secondary));
+    border-color:transparent;color:#fff;
+  }
+
+  /* ═══════ FILIÈRES GRID ═══════ */
+  .filieres-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+    gap:14px;
+  }
+  .filiere-card{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:var(--radius-sm);
+    padding:18px;cursor:pointer;
+    transition:all .3s var(--ease);
+    position:relative;
+  }
+  .filiere-card:hover{
+    background:var(--surface-2);
+    border-color:rgba(124,58,237,.3);
+    transform:translateY(-4px);
+    box-shadow:0 16px 40px rgba(0,0,0,.35);
+  }
+  .filiere-card .tag{
+    display:inline-block;padding:3px 10px;border-radius:20px;
+    font-size:.62rem;font-weight:700;text-transform:uppercase;
+    letter-spacing:.8px;margin-bottom:8px;
+    font-family:'JetBrains Mono',monospace;
+  }
+  .tag-science{background:rgba(124,58,237,.2);color:#c4b5fd}
+  .tag-tech{background:rgba(6,182,212,.15);color:#67e8f9}
+  .tag-sante{background:rgba(236,72,153,.15);color:#f9a8d4}
+  .tag-commerce{background:rgba(245,158,11,.15);color:#fcd34d}
+  .tag-art{background:rgba(168,85,247,.15);color:#d8b4fe}
+  .tag-social{background:rgba(34,197,94,.15);color:#86efac}
+  .filiere-card h4{
+    color:var(--text);font-size:.92rem;margin-bottom:6px;
+    font-weight:600;font-family:'Syne',sans-serif;
+  }
+  .filiere-card .meta{
+    display:flex;gap:10px;font-size:.72rem;
+    color:var(--dim);margin-bottom:10px;
+  }
+  .filiere-card .salary-badge{
+    display:inline-block;padding:5px 12px;border-radius:8px;
+    background:rgba(34,197,94,.15);
+    color:#86efac;font-weight:700;font-size:.75rem;
+    border:1px solid rgba(34,197,94,.2);
+    font-family:'JetBrains Mono',monospace;
+  }
+  .filiere-card .arrow{
+    position:absolute;right:16px;bottom:16px;
+    font-size:.95rem;color:#c4b5fd;
+    transition:transform .2s;
+  }
+  .filiere-card:hover .arrow{transform:translateX(5px)}
+
+  /* ═══════ MODAL ═══════ */
+  .modal-overlay{
+    display:none;position:fixed;inset:0;
+    background:rgba(5,7,13,.85);
+    backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+    z-index:100;align-items:center;justify-content:center;padding:16px;
+  }
+  .modal-overlay.open{display:flex}
+  .modal{
+    background:rgba(12,16,28,.98);
+    border:1px solid var(--border-hi);
+    border-radius:var(--radius-xl);max-width:780px;width:100%;
+    max-height:90vh;overflow-y:auto;padding:32px;
+    position:relative;animation:modalIn .4s var(--ease-bounce);
+    box-shadow:0 40px 100px rgba(0,0,0,.7);
+  }
+  @keyframes modalIn{
+    from{opacity:0;transform:scale(.95) translateY(20px)}
+    to{opacity:1;transform:scale(1) translateY(0)}
+  }
+  .modal::-webkit-scrollbar{width:5px}
+  .modal::-webkit-scrollbar-thumb{background:rgba(124,58,237,.3);border-radius:3px}
+  .modal-close{
+    position:absolute;top:14px;right:14px;
+    width:34px;height:34px;border-radius:50%;
+    border:1px solid var(--border);
+    background:var(--surface);cursor:pointer;
+    font-size:.9rem;display:flex;align-items:center;justify-content:center;
+    transition:all .2s;color:var(--muted);
+  }
+  .modal-close:hover{
+    background:var(--danger);color:#fff;border-color:var(--danger);
+    transform:rotate(90deg);
+  }
+  .modal h2{
+    color:var(--text);margin-bottom:6px;font-size:1.25rem;
+    font-family:'Syne',sans-serif;font-weight:700;
+  }
+  .modal .modal-sub{color:var(--dim);font-size:.82rem;margin-bottom:22px}
+  .modal-section{margin-bottom:22px}
+  .modal-section h4{
+    color:#c4b5fd;font-size:.75rem;
+    text-transform:uppercase;letter-spacing:1.2px;
+    margin-bottom:12px;padding-bottom:7px;
+    border-bottom:1px solid var(--border);
+    font-family:'JetBrains Mono',monospace;font-weight:600;
+  }
+  .salary-table{
+    width:100%;border-collapse:collapse;font-size:.83rem;
+    border-radius:12px;overflow:hidden;
+    border:1px solid var(--border);
+  }
+  .salary-table th{
+    background:rgba(124,58,237,.15);color:var(--text);
+    padding:10px 12px;text-align:left;font-weight:600;font-size:.7rem;
+    text-transform:uppercase;letter-spacing:.8px;
+    font-family:'JetBrains Mono',monospace;
+  }
+  .salary-table td{
+    padding:10px 12px;border-bottom:1px solid rgba(255,255,255,.03);
+    color:var(--muted);
+  }
+  .salary-table tr:last-child td{border-bottom:none}
+  .salary-table tr:nth-child(even){background:rgba(255,255,255,.015)}
+  .progress-viz{
+    display:flex;align-items:flex-end;gap:5px;height:110px;
+    margin:14px 0;padding:12px;
+    background:rgba(255,255,255,.015);
+    border-radius:12px;border:1px solid var(--border);
+  }
+  .bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px}
+  .bar{
+    width:100%;border-radius:5px 5px 0 0;
+    background:linear-gradient(180deg,#c4b5fd,var(--primary));
+    transition:height .6s var(--ease);
+  }
+  .bar-label{font-size:.58rem;color:var(--dim);text-align:center;font-weight:600;font-family:'JetBrains Mono',monospace}
+  .perspective-tag{
+    display:inline-block;padding:5px 14px;border-radius:20px;
+    font-size:.73rem;font-weight:600;
+  }
+  .persp-high{background:rgba(34,197,94,.15);color:#86efac;border:1px solid rgba(34,197,94,.2)}
+  .persp-medium{background:rgba(245,158,11,.15);color:#fcd34d;border:1px solid rgba(245,158,11,.2)}
+  .persp-evolving{background:rgba(168,85,247,.15);color:#d8b4fe;border:1px solid rgba(168,85,247,.2)}
+
+  .info-grid{
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+    gap:10px;margin-top:14px;
+  }
+  .info-box{
+    background:var(--surface);border-radius:var(--radius-sm);
+    padding:16px;border:1px solid var(--border);
+  }
+  .info-box h4{
+    color:#c4b5fd;font-size:.68rem;
+    margin-bottom:6px;text-transform:uppercase;letter-spacing:1px;
+    font-family:'JetBrains Mono',monospace;
+  }
+  .info-box p{font-size:.85rem;color:var(--muted)}
+
+  .summary-row{
+    display:flex;justify-content:space-between;
+    padding:10px 0;border-bottom:1px solid rgba(255,255,255,.04);
+    font-size:.86rem;
+  }
+  .summary-row:last-child{border-bottom:none}
+  .summary-row span{color:var(--muted)}
+  .summary-row strong{color:var(--text);font-weight:600}
+
+  .final-message{
+    text-align:center;padding:36px 22px;
+    background:linear-gradient(135deg,rgba(124,58,237,.1),rgba(6,182,212,.06));
+    border:1px solid rgba(124,58,237,.2);
+    border-radius:var(--radius);margin-top:22px;
+  }
+  .final-message p{margin-bottom:8px;font-size:.9rem;color:var(--muted)}
+  .final-message .big{
+    font-size:1.2rem;font-weight:700;color:#e9d5ff;
+    font-family:'Syne',sans-serif;
+  }
+
+  .restart{
+    text-align:center;padding:22px 0 0;
+    border-top:1px solid var(--border);margin-top:22px;
+  }
+
+  select{
+    width:100%;padding:13px 16px;
+    background:var(--surface);color:var(--text);
+    border:1px solid var(--border);
+    border-radius:var(--radius-sm);
+    font-family:'Inter',sans-serif;font-size:.88rem;
+    cursor:pointer;
+    appearance:none;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%238b95b3' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-repeat:no-repeat;background-position:right 14px center;
+    padding-right:36px;
+  }
+  select:focus{outline:none;border-color:var(--primary)}
+  select option{background:#0c1020;color:var(--text)}
+
+  textarea{
+    width:100%;padding:12px;background:var(--surface);
+    border:1px solid var(--border);border-radius:var(--radius-sm);
+    font-family:'Inter',sans-serif;font-size:.85rem;color:var(--text);
+    resize:vertical;
+  }
+  textarea:focus{outline:none;border-color:var(--primary)}
+  textarea::placeholder{color:var(--dim)}
+
+  /* ═══════ CONFIRM MODAL ═══════ */
+  .confirm-overlay{
+    display:none;position:fixed;inset:0;
+    background:rgba(5,7,13,.9);
+    backdrop-filter:blur(16px);
+    z-index:200;align-items:center;justify-content:center;padding:20px;
+  }
+  .confirm-overlay.open{display:flex}
+  .confirm-box{
+    background:rgba(15,20,35,.98);
+    border:1px solid rgba(244,63,94,.3);
+    border-radius:var(--radius);
+    max-width:480px;width:100%;padding:28px;
+    animation:modalIn .4s var(--ease-bounce);
+    box-shadow:0 40px 100px rgba(0,0,0,.7);
+  }
+  .confirm-box .confirm-icon{
+    width:56px;height:56px;border-radius:50%;
+    background:rgba(244,63,94,.12);
+    border:2px solid rgba(244,63,94,.3);
+    display:flex;align-items:center;justify-content:center;
+    font-size:1.6rem;margin:0 auto 18px;
+  }
+  .confirm-box h3{
+    text-align:center;font-family:'Syne',sans-serif;
+    font-size:1.1rem;font-weight:700;color:var(--text);
+    margin-bottom:10px;
+  }
+  .confirm-box p{
+    text-align:center;font-size:.85rem;color:var(--muted);
+    margin-bottom:18px;
+  }
+  .confirm-box .loss-list{
+    background:rgba(244,63,94,.06);
+    border:1px solid rgba(244,63,94,.15);
+    border-radius:12px;padding:14px;margin-bottom:20px;
+  }
+  .confirm-box .loss-list h4{
+    color:#fda4af;font-size:.72rem;text-transform:uppercase;
+    letter-spacing:1px;margin-bottom:8px;
+    font-family:'JetBrains Mono',monospace;
+  }
+  .confirm-box .loss-list ul{list-style:none;padding:0}
+  .confirm-box .loss-list li{
+    padding:4px 0 4px 20px;position:relative;
+    font-size:.82rem;color:var(--muted);
+  }
+  .confirm-box .loss-list li::before{
+    content:"✕";position:absolute;left:0;
+    color:var(--danger);font-weight:700;font-size:.75rem;
+  }
+  .confirm-box .confirm-actions{
+    display:flex;gap:10px;justify-content:center;
+  }
+  .confirm-box .confirm-actions .btn{flex:1;justify-content:center}
+
+  /* ═══════ SCROLL TOP ═══════ */
+  .scroll-top{
+    position:fixed;bottom:22px;right:22px;
+    width:42px;height:42px;border-radius:50%;
+    background:linear-gradient(135deg,var(--primary),var(--secondary));
+    border:none;color:#fff;font-size:1rem;
+    cursor:pointer;z-index:40;
+    display:none;align-items:center;justify-content:center;
+    box-shadow:0 6px 20px var(--primary-glow);
+    transition:transform .2s;
+  }
+  .scroll-top.visible{display:flex}
+  .scroll-top:hover{transform:translateY(-3px) scale(1.08)}
+
+  /* ═══════ RESPONSIVE ═══════ */
+  @media(max-width:640px){
+    body{padding:8px}
+    .hero{padding:40px 20px 32px}
+    .hero h1{font-size:1.7rem}
+    .hero-stats{gap:18px}
+    .content{padding:16px 18px 32px}
+    .progress-wrap{padding:0 18px 16px}
+    h2.step-title{font-size:1.15rem}
+    .btn{padding:11px 20px;font-size:.83rem}
+    .filieres-grid{grid-template-columns:1fr}
+    .country-grid{grid-template-columns:repeat(2,1fr)}
+    .modal{padding:22px}
+    .progress-viz{height:85px}
+    .scroll-top{bottom:14px;right:14px;width:38px;height:38px}
+    .confirm-box{padding:22px}
+    .confirm-box .confirm-actions{flex-direction:column}
+    .bourse-details-grid{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<div class="bg-orbs">
+  <div class="orb"></div><div class="orb"></div><div class="orb"></div>
+</div>
+<div class="grid-overlay"></div>
+
+<div class="app">
+  <div class="hero">
+    <div class="hero-glow"></div>
+    <div class="hero-content">
+      <div class="hero-badge">✦ Diagnostic d'orientation</div>
+      <h1>LA BOUSSOLE</h1>
+      <p class="tagline">Le guide qui t'aide à trouver ta voie et à construire l'avenir qui te ressemble — partout dans le monde.</p>
+      <div class="motto">Réussir son BAC est une étape. Savoir où aller ensuite change une vie.</div>
+      <div class="hero-stats">
+        <div class="hero-stat"><div class="num" id="statPays">25</div><div class="lbl">Pays</div></div>
+        <div class="hero-stat"><div class="num" id="statFilieres">22</div><div class="lbl">Filières</div></div>
+        <div class="hero-stat"><div class="num" id="statBourses">100+</div><div class="lbl">Bourses</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="progress-wrap">
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="progress-label" id="progressLabel">Intro</div>
+  </div>
+
+  <div class="content">
+
+    <!-- ÉTAPE 0 -->
+    <section class="step active" data-step="0">
+      <h2 class="step-title"><span class="step-num">00</span>Bienvenue</h2>
+      <p class="step-subtitle">Réussir un examen est une victoire. Savoir quoi faire après est une décision qui peut transformer toute une vie.</p>
+
+      <div class="result-card">
+        <h3>🎯 Ce guide est fait pour toi si :</h3>
+        <ul class="clean">
+          <li>Tu es lycéen ou futur bachelier</li>
+          <li>Tu viens d'obtenir ton BAC et tu ne sais pas quelle direction prendre</li>
+          <li>Tu es étudiant et tu doutes de ton choix actuel</li>
+          <li>Tu souhaites construire un avenir aligné avec tes capacités et tes objectifs</li>
+        </ul>
+      </div>
+
+      <div class="result-card">
+        <h3>✨ Ce que tu vas découvrir :</h3>
+        <ul class="clean">
+          <li>Ton profil d'orientation personnalisé (6 profils)</li>
+          <li><strong>25 pays</strong> avec données salariales locales adaptées</li>
+          <li><strong>22 filières détaillées</strong> avec débouchés et perspectives</li>
+          <li><strong>100+ bourses d'études</strong> détaillées (montants, critères, dates limites)</li>
+          <li>Les <strong>écoles les plus prestigieuses</strong> pour chaque filière</li>
+          <li>Un plan d'action concret sur 7, 30 et 90 jours</li>
+        </ul>
+      </div>
+
+      <div class="btn-row center">
+        <button class="btn btn-primary" onclick="goToStep(1)"><span>🚀</span><span>Commencer mon diagnostic</span></button>
+      </div>
+    </section>
+
+    <!-- ÉTAPE 1 : PAYS -->
+    <section class="step" data-step="1">
+      <h2 class="step-title"><span class="step-num">01</span>Choisis ton pays</h2>
+      <p class="step-subtitle">Les salaires, secteurs porteurs et bourses varient selon les pays. Sélectionne le tien pour des données adaptées.</p>
+
+      <input type="text" class="country-search" id="countrySearch" placeholder="🔍 Rechercher un pays..." oninput="filterCountries(this.value)">
+      <div class="country-grid" id="countryGrid"></div>
+      <div id="countryPanel"></div>
+
+      <div class="btn-row">
+        <button class="btn btn-ghost" onclick="goToStep(0)"><span>←</span><span>Retour</span></button>
+        <button class="btn btn-primary" onclick="goToStep(2)" id="btnAfterCountry" disabled><span>Continuer</span><span>→</span></button>
+      </div>
+    </section>
+
+    <!-- ÉTAPE 2 : DIAGNOSTIC -->
+    <section class="step" data-step="2">
+      <h2 class="step-title"><span class="step-num">02</span>Diagnostic express</h2>
+      <p class="step-subtitle">Où en es-tu aujourd'hui ?</p>
+
+      <div class="question">
+        <label class="q-label">1. Je suis :</label>
+        <div class="options">
+          <label class="option"><input type="radio" name="statut" value="Lycéen"><span class="option-letter">A</span><span class="option-content">Lycéen</span></label>
+          <label class="option"><input type="radio" name="statut" value="Futur bachelier"><span class="option-letter">B</span><span class="option-content">Futur bachelier</span></label>
+          <label class="option"><input type="radio" name="statut" value="Bachelier"><span class="option-letter">C</span><span class="option-content">Bachelier</span></label>
+          <label class="option"><input type="radio" name="statut" value="Étudiant"><span class="option-letter">D</span><span class="option-content">Étudiant</span></label>
+          <label class="option"><input type="radio" name="statut" value="En réorientation"><span class="option-letter">E</span><span class="option-content">En réorientation</span></label>
+        </div>
+      </div>
+
+      <div class="question">
+        <label class="q-label">2. Mon niveau de clarté aujourd'hui :</label>
+        <div class="slider-wrap">
+          <input type="range" id="clarte" min="0" max="10" value="5">
+          <div class="slider-value" id="clarteValue">5 / 10</div>
+          <div style="display:flex;justify-content:space-between;font-size:.68rem;color:var(--dim)">
+            <span>😕 Perdu</span><span>😐 Moyen</span><span>😎 Clair</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="question">
+        <label class="q-label">3. Ma situation :</label>
+        <div class="options">
+          <label class="option"><input type="radio" name="situation" value="Je n'ai aucune idée"><span class="option-letter">A</span><span class="option-content">Je n'ai aucune idée</span></label>
+          <label class="option"><input type="radio" name="situation" value="J'ai trop d'idées"><span class="option-letter">B</span><span class="option-content">J'ai trop d'idées</span></label>
+          <label class="option"><input type="radio" name="situation" value="J'ai une idée mais j'ai peur"><span class="option-letter">C</span><span class="option-content">J'ai une idée mais j'ai peur</span></label>
+          <label class="option"><input type="radio" name="situation" value="J'ai choisi mais je doute"><span class="option-letter">D</span><span class="option-content">J'ai choisi mais je doute</span></label>
+          <label class="option"><input type="radio" name="situation" value="Je suis prêt à avancer"><span class="option-letter">E</span><span class="option-content">Je suis prêt à avancer</span></label>
+        </div>
+      </div>
+
+      <div class="question">
+        <label class="q-label">4. Mon besoin prioritaire :</label>
+        <div class="options">
+          <label class="option"><input type="radio" name="besoin" value="Me connaître"><span class="option-letter">A</span><span class="option-content">Me connaître</span></label>
+          <label class="option"><input type="radio" name="besoin" value="Découvrir des métiers"><span class="option-letter">B</span><span class="option-content">Découvrir des métiers</span></label>
+          <label class="option"><input type="radio" name="besoin" value="Choisir une filière"><span class="option-letter">C</span><span class="option-content">Choisir une filière</span></label>
+          <label class="option"><input type="radio" name="besoin" value="Construire un plan d'action"><span class="option-letter">D</span><span class="option-content">Construire un plan d'action</span></label>
+          <label class="option"><input type="radio" name="besoin" value="Reprendre confiance"><span class="option-letter">E</span><span class="option-content">Reprendre confiance</span></label>
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-ghost" onclick="goToStep(1)"><span>←</span><span>Retour</span></button>
+        <button class="btn btn-primary" onclick="goToStep(3)"><span>Continuer</span><span>→</span></button>
+      </div>
+    </section>
+
+    <!-- ÉTAPE 3 : TEST PROFIL -->
+    <section class="step" data-step="3">
+      <h2 class="step-title"><span class="step-num">03</span>Ma boussole intérieure</h2>
+      <p class="step-subtitle">10 questions pour identifier ton profil dominant.</p>
+      <div id="profilQuestions"></div>
+      <div class="btn-row">
+        <button class="btn btn-ghost" onclick="goToStep(2)"><span>←</span><span>Retour</span></button>
+        <button class="btn btn-primary" onclick="calcProfil()"><span>Voir mon profil</span><span>→</span></button>
+      </div>
+    </section>
+
+    <!-- ÉTAPE 4 : RÉSULTAT -->
+    <section class="step" data-step="4">
+      <h2 class="step-title"><span class="step-num">04</span>Ton profil</h2>
+      <p class="step-subtitle">Voici ce que révèle ta boussole intérieure.</p>
+      <div id="profilResult"></div>
+      <div class="btn-row">
+        <button class="btn btn-ghost" onclick="goToStep(3)"><span>←</span><span>Refaire</span></button>
+        <button class="btn btn-primary" onclick="goToStep(5)"><span>Découvrir les filières</span><span>→</span></button>
+      </div>
+    </section>
+
+    <!-- ÉTAPE 5 : FILIÈRES -->
+    <section class="step" data-step="5">
+      <h2 class="step-title"><span class="step-num">05</span>Explore les filières</h2>
+      <p class="step-subtitle">Clique sur une filière pour voir les débouchés, salaires, perspectives, bourses et écoles prestigieuses dans ton pays.</p>
+
+      <div class="filter-bar" id="filterBar">
+        <button class="filter-btn active" data-filter="all" onclick="filterFilieres('all', this)">Toutes</button>
+        <button class="filter-btn" data-filter="science" onclick="filterFilieres('science', this)">🔬 Sciences</button>
+        <button class="filter-btn" data-filter="tech" onclick="filterFilieres('tech', this)">💻 Tech</button>
+        <button class="filter-btn" data-filter="sante" onclick="filterFilieres('sante', this)">🏥 Santé</button>
+        <button class="filter-btn" data-filter="commerce" onclick="filterFilieres('commerce', this)">📈 Commerce</button>
+        <button class="filter-btn" data-filter="art" onclick="filterFilieres('art', this)">🎨 Arts</button>
+        <button class="filter-btn" data-filter="social" onclick="filterFilieres('social', this)">💚 Social</button>
+        <button class="filter-btn" data-filter="droit" onclick="filterFilieres('droit', this)">⚖️ Droit</button>
+        <button class="filter-btn" data-filter="agro" onclick="filterFilieres('agro', this)">🌾 Agro</button>
+      </div>
+
+      <div class="filieres-grid" id="filieresGrid"></div>
+
+      <div class="btn-row">
+        <button class="btn btn-ghost" onclick="goToStep(4)"><span>←</span><span>Retour</span></button>
+        <button class="btn btn-primary" onclick="goToStep(6)"><span>Simulateur</span><span>→</span></button>
+      </div>
+    </section>
+
+    <!-- ÉTAPE 6 : SIMULATEUR -->
+    <section class="step" data-step="6">
+      <h2 class="step-title"><span class="step-num">06</span>Simulateur de revenus</h2>
+      <p class="step-subtitle">Choisis une filière et découvre ta progression salariale sur 10 ans dans ton pays.</p>
+
+      <div class="question">
+        <label class="q-label">Sélectionne ta filière :</label>
+        <select id="simuFiliere" onchange="updateSimu()"></select>
+      </div>
+
+      <div id="simuResult"></div>
+
+      <div class="btn-row">
+        <button class="btn btn-ghost" onclick="goToStep(5)"><span>←</span><span>Retour</span></button>
+        <button class="btn btn-primary" onclick="goToStep(7)"><span>Plan d'action</span><span>→</span></button>
+      </div>
+    </section>
+
+    <!-- ÉTAPE 7 : ERREURS -->
+    <section class="step" data-step="7">
+      <h2 class="step-title"><span class="step-num">07</span>Erreurs à éviter</h2>
+      <p class="step-subtitle">Coche ce qui te concerne. Sois honnête !</p>
+
+      <div class="checkbox-list">
+        <label class="check-item"><input type="checkbox" class="erreur" value="Parents"><span>Choisir pour faire plaisir aux parents</span></label>
+        <label class="check-item"><input type="checkbox" class="erreur" value="Amis"><span>Suivre les amis</span></label>
+        <label class="check-item"><input type="checkbox" class="erreur" value="Défaut"><span>Choisir une filière par défaut</span></label>
+        <label class="check-item"><input type="checkbox" class="erreur" value="Talents"><span>Ignorer ses talents</span></label>
+        <label class="check-item"><input type="checkbox" class="erreur" value="Débouchés"><span>Ne pas se renseigner sur les débouchés</span></label>
+        <label class="check-item"><input type="checkbox" class="erreur" value="Passion"><span>Confondre passion et métier</span></label>
+        <label class="check-item"><input type="checkbox" class="erreur" value="Dernière minute"><span>Attendre la dernière minute</span></label>
+        <label class="check-item"><input type="checkbox" class="erreur" value="Changer"><span>Ne pas oser changer de voie</span></label>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-ghost" onclick="goToStep(6)"><span>←</span><span>Retour</span></button>
+        <button class="btn btn-primary" onclick="showErreurScore()"><span>Voir mon score</span><span>→</span></button>
+      </div>
+      <div id="erreurScore"></div>
+    </section>
+
+    <!-- ÉTAPE 8 : PLAN D'ACTION -->
+    <section class="step" data-step="8">
+      <h2 class="step-title"><span class="step-num">08</span>Mon plan d'action</h2>
+      <p class="step-subtitle">Concrétise dès maintenant.</p>
+
+      <div class="result-card">
+        <h3>🗓️ Dans les 7 prochains jours</h3>
+        <div class="checkbox-list">
+          <label class="check-item"><input type="checkbox" class="action"><span>Je liste 5 métiers qui m'attirent dans ma filière cible</span></label>
+          <label class="check-item"><input type="checkbox" class="action"><span>Je contacte 1 professionnel pour un entretien informel</span></label>
+          <label class="check-item"><input type="checkbox" class="action"><span>Je vérifie les bourses disponibles pour mon profil</span></label>
+          <label class="check-item"><input type="checkbox" class="action"><span>Je note mes 3 forces principales</span></label>
+        </div>
+      </div>
+
+      <div class="result-card">
+        <h3>🗓️ Dans les 30 prochains jours</h3>
+        <div class="checkbox-list">
+          <label class="check-item"><input type="checkbox" class="action"><span>Je choisis 3 filières avec leurs débouchés</span></label>
+          <label class="check-item"><input type="checkbox" class="action"><span>Je compare les progressions salariales sur 10 ans</span></label>
+          <label class="check-item"><input type="checkbox" class="action"><span>Je prépare ma candidature à 1 bourse d'études</span></label>
+          <label class="check-item"><input type="checkbox" class="action"><span>Je rencontre un conseiller d'orientation</span></label>
+        </div>
+      </div>
+
+      <div class="result-card">
+        <h3>🗓️ Dans les 90 prochains jours</h3>
+        <div class="checkbox-list">
+          <label class="check-item"><input type="checkbox" class="action"><span>Je prépare mon dossier d'inscription</span></label>
+          <label class="check-item"><input type="checkbox" class="action"><span>Je dépose mes candidatures</span></label>
+          <label class="check-item"><input type="checkbox" class="action"><span>Je postule à toutes les bourses éligibles</span></label>
+          <label class="check-item"><input type="checkbox" class="action"><span>Je prépare mon entrée (logement, financement, matériel)</span></label>
+        </div>
+      </div>
+
+      <div class="question">
+        <label class="q-label">📓 Journal de bord</label>
+        <p style="margin-bottom:8px;font-size:.82rem;color:var(--dim)">Ce que j'ai découvert sur moi :</p>
+        <textarea rows="3" placeholder="Écris ici..." style="margin-bottom:12px"></textarea>
+        <p style="margin-bottom:8px;font-size:.82rem;color:var(--dim)">La filière que je veux explorer en priorité :</p>
+        <textarea rows="3" placeholder="Écris ici..."></textarea>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-ghost" onclick="goToStep(7)"><span>←</span><span>Retour</span></button>
+        <button class="btn btn-accent" onclick="goToStep(9)"><span>🎉</span><span>Voir ma synthèse</span><span>→</span></button>
+      </div>
+    </section>
+
+    <!-- ÉTAPE 9 : SYNTHÈSE -->
+    <section class="step" data-step="9">
+      <h2 class="step-title"><span class="step-num">09</span>Ta synthèse</h2>
+      <p class="step-subtitle">Récapitulatif personnel de ton diagnostic.</p>
+
+      <div id="synthese"></div>
+
+      <div class="final-message">
+        <p>Réussir son BAC est une étape.</p>
+        <p class="big">Savoir où aller ensuite change une vie.</p>
+        <p style="margin-top:14px;font-size:.85rem;opacity:.75">LA BOUSSOLE ne te dit pas simplement quelles études choisir.<br>Elle t'aide à comprendre qui tu es, ce que tu peux devenir et comment y parvenir.</p>
+      </div>
+
+      <div class="restart">
+        <button class="btn btn-ghost" onclick="restart()"><span>🔄</span><span>Refaire le diagnostic</span></button>
+        <button class="btn btn-primary" onclick="window.print()" style="margin-left:10px"><span>🖨️</span><span>Imprimer / PDF</span></button>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+  <div class="modal" id="modalContent" onclick="event.stopPropagation()">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div id="modalBody"></div>
+  </div>
+</div>
+
+<!-- CONFIRM MODAL -->
+<div class="confirm-overlay" id="confirmOverlay">
+  <div class="confirm-box">
+    <div class="confirm-icon">⚠️</div>
+    <h3>Veux-tu vraiment quitter ?</h3>
+    <p>Tu es sur le point d'abandonner ton diagnostic d'orientation. Voici ce que tu perdrais :</p>
+    <div class="loss-list">
+      <h4>Ce que tu perdrais :</h4>
+      <ul>
+        <li>Ton profil d'orientation personnalisé (parmi 6 profils)</li>
+        <li>L'accès aux 22 filières détaillées avec débouchés et salaires</li>
+        <li>Les 100+ bourses d'études détaillées de ton pays</li>
+        <li>Les écoles prestigieuses recommandées pour ta filière</li>
+        <li>Le simulateur de revenus sur 10 ans</li>
+        <li>Ton plan d'action personnalisé sur 7, 30 et 90 jours</li>
+        <li>Ta synthèse complète imprimable en PDF</li>
+      </ul>
+    </div>
+    <div class="confirm-actions">
+      <button class="btn btn-ghost" onclick="closeConfirm()"><span>Continuer</span></button>
+      <button class="btn btn-danger" onclick="confirmExit()"><span>Quitter</span></button>
+    </div>
+  </div>
+</div>
+
+<!-- SCROLL TOP -->
+<button class="scroll-top" id="scrollTop" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Remonter en haut">↑</button>
+
+<script>
+/* ═══════════════════════════════════════════════
+   DONNÉES PAYS AVEC BOURSES DÉTAILLÉES
+   ═══════════════════════════════════════════════ */
+const PAYS = [
+  {
+    id:"france",nom:"France",flag:"🇫🇷",devise:"EUR",symbole:"€",salaireMin:"1 800 €",
+    secteurs:["Numérique & IA","Santé & soin","BTP & transition énergétique","Commerce & conseil","Industrie"],
+    note:"Les ingénieurs débutants gagnent ~2 400 € net/mois. Près de la moitié des recrutements sont jugés difficiles.",
+    emploi:"La France offre un marché de l'emploi diversifié. Les secteurs de la tech, de la santé et de la transition énergétique sont les plus porteurs. Le pays accueille chaque année plus de 350 000 étudiants internationaux.",
+    bourses:[
+      {nom:"Bourse France Excellence Eiffel",type:"Gouvernementale · Master/Doctorat",
+       desc:"Programme phare du ministère des Affaires étrangères pour attirer les meilleurs étudiants étrangers en Master et Doctorat. Couvre les frais de scolarité, l'assurance, le transport et offre une allocation mensuelle.",
+       montant:"1 181 €/mois",
+       duree:"12 à 36 mois selon le niveau",
+       niveau:"Master et Doctorat",
+       nationalite:"Tous pays (candidature via l'établissement français)",
+       deadline:"Janvier de chaque année",
+       couverture:["Frais de scolarité","Allocation mensuelle","Assurance santé","Voyage international","Activités culturelles"],
+       lien:"https://www.campusfrance.org/fr/eiffel"},
+      {nom:"Bourses du gouvernement français (BGF)",type:"Gouvernementale · Tous niveaux",
+       desc:"Financées par les ambassades de France dans chaque pays. Attribuées sur critères académiques et sociaux. Souvent en cofinancement avec l'établissement d'accueil.",
+       montant:"700 à 1 200 €/mois",
+       duree:"10 à 24 mois",
+       niveau:"Licence à Doctorat",
+       nationalite:"Étudiants du pays de l'ambassade",
+       deadline:"Variable (généralement févr-avr)",
+       couverture:["Frais de scolarité","Allocation mensuelle","Sécurité sociale","Aide au logement"],
+       lien:"https://www.campusfrance.org"},
+      {nom:"Programme Erasmus+ (Masters conjoints)",type:"Union européenne · Master",
+       desc:"Programme européen offrant des bourses pour des masters conjoints dans plusieurs universités européennes. Inclut une mobilité entre 2 et 4 pays.",
+       montant:"1 400 €/mois + frais",
+       duree:"1 à 2 ans",
+       niveau:"Master",
+       nationalite:"Monde entier",
+       deadline:"Janvier de chaque année",
+       couverture:["Frais de scolarité","Allocation mensuelle","Voyage","Installation","Assurance"],
+       lien:"https://erasmus-plus.ec.europa.eu"},
+      {nom:"Bourses régionales et municipales",type:"Collectivités territoriales",
+       desc:"Les régions (Île-de-France, Auvergne-Rhône-Alpes, etc.) et certaines villes attribuent des bourses aux étudiants étrangers qui suivent une formation sur leur territoire.",
+       montant:"1 000 à 5 000 €/an",
+       duree:"1 à 3 ans",
+       niveau:"Licence à Master",
+       nationalite:"Variable selon la région",
+       deadline:"Variable (généralement mai-juin)",
+       couverture:["Aide au logement","Frais de scolarité partiels","Aide à la mobilité"],
+       lien:"https://www.campusfrance.org"},
+      {nom:"Bourses de l'Agence Universitaire de la Francophonie (AUF)",type:"Organisation internationale",
+       desc:"Offre des bourses pour des masters en journalisme international et autres programmes. Priorité aux ressortissants des pays membres de la Francophonie.",
+       montant:"Variable",
+       duree:"1 à 2 ans",
+       niveau:"Master et Doctorat",
+       nationalite:"Pays francophones",
+       deadline:"Variable",
+       couverture:["Frais de scolarité","Allocation","Voyage"],
+       lien:"https://www.auf.org"}
+    ]
+  },
+  {
+    id:"senegal",nom:"Sénégal",flag:"🇸🇳",devise:"XOF",symbole:"FCFA",salaireMin:"64 705 FCFA",
+    secteurs:["Fintech & Mobile Money","ONG & développement","Pêche & agroalimentaire","Télécoms & data","Cybersécurité"],
+    note:"Croissance salariale 7-11%/an. Dakar concentre 80% des offres.",
+    emploi:"Le Sénégal connaît une croissance salariale de 7 à 11% par an. 94% des Sénégalais considèrent le français comme un atout professionnel. Dakar concentre 80% des offres d'emploi, notamment dans la fintech, les télécoms et les ONG internationales.",
+    bourses:[
+      {nom:"Bourse de l'Excellence BGFIBank",type:"Privée · Entreprise",
+       desc:"Attribuée par le groupe BGFIBank aux étudiants brillants originaires des pays d'implantation (Bénin, Cameroun, Congo, Côte d'Ivoire, France, Gabon, Sénégal). Couvre la scolarité et une partie des frais de vie.",
+       montant:"Variable selon cursus",
+       duree:"1 à 5 ans",
+       niveau:"Licence et Master",
+       nationalite:"Ressortissants des pays BGFIBank",
+       deadline:"Juillet-Août",
+       couverture:["Frais de scolarité","Allocation mensuelle","Matériel pédagogique"],
+       lien:"https://www.bgfibank.com"},
+      {nom:"Bourses Ashinaga",type:"ONG internationale",
+       desc:"Programme de bourses pour les étudiants orphelins ou en situation difficile. Financement complet des études au Japon, aux États-Unis, au Royaume-Uni et au Sénégal.",
+       montant:"Complet + allocation",
+       duree:"Toute la durée du cursus",
+       niveau:"Licence à Master",
+       nationalite:"Pays africains éligibles",
+       deadline:"Février-Mars",
+       couverture:["Frais de scolarité","Logement","Restauration","Voyages","Assurance","Livres et matériel"],
+       lien:"https://www.ashinaga.org"},
+      {nom:"Bourses VLIR-UOS (Belgique)",type:"Coopération belge",
+       desc:"Bourses ouvertes à 29 pays dont le Sénégal. Finance des formations de Master et des programmes de renforcement des capacités en Belgique.",
+       montant:"Complet + allocation",
+       duree:"1 à 2 ans",
+       niveau:"Master et formation continue",
+       nationalite:"29 pays en développement",
+       deadline:"Février",
+       couverture:["Frais de scolarité","Allocation mensuelle","Voyage","Assurance","Logement"],
+       lien:"https://www.vliruos.be"},
+      {nom:"Bourses de Russie pour étudiants sénégalais",type:"Gouvernementale · Russie",
+       desc:"100 bourses d'études offertes chaque année par le gouvernement russe aux étudiants sénégalais pour poursuivre des études supérieures en Russie.",
+       montant:"Complet + allocation",
+       duree:"1 à 5 ans",
+       niveau:"Licence à Doctorat",
+       nationalite:"Sénégalais uniquement",
+       deadline:"Janvier-Mars",
+       couverture:["Frais de scolarité","Logement","Allocation mensuelle"],
+       lien:"https://education-in-russia.com"},
+      {nom:"Bourses Mastercard Foundation (Africa)",type:"Fondation internationale",
+       desc:"Programme de bourses complètes pour de jeunes africains talentueux. Partenariats avec plus de 30 universités en Afrique et dans le monde.",
+       montant:"Complet",
+       duree:"Toute la durée du cursus",
+       niveau:"Licence à Master",
+       nationalite:"Jeunes africains",
+       deadline:"Variable selon université",
+       couverture:["Frais de scolarité","Logement","Restauration","Transport","Matériel","Mentorat"],
+       lien:"https://mastercardfdn.org"},
+      {nom:"Bourses canadiennes BCDI 2030",type:"Gouvernementale · Canada",
+       desc:"Programme canadien de bourses pour les étudiants de 26 pays africains. Finance des formations en français au Canada.",
+       montant:"Complet + allocation",
+       duree:"1 à 4 ans",
+       niveau:"Collège à Doctorat",
+       nationalite:"26 pays africains",
+       deadline:"Variable",
+       couverture:["Frais de scolarité","Voyage","Allocation","Assurance"],
+       lien:"https://www.boursescanada.ca"}
+    ]
+  },
+  {
+    id:"cotedivoire",nom:"Côte d'Ivoire",flag:"🇨🇮",devise:"XOF",symbole:"FCFA",salaireMin:"75 000 FCFA",
+    secteurs:["Agro-industrie","Mines & énergie","Télécoms & IT","Commerce & services","BTP"],
+    note:"BTS/DUT logistique : ~200 000 FCFA net/mois. Numérique en forte croissance à Abidjan.",
+    emploi:"La Côte d'Ivoire est un hub économique majeur en Afrique de l'Ouest. 95% des Ivoiriens considèrent le français comme un atout professionnel. Les secteurs de l'agro-industrie, des mines, des télécoms et du BTP recrutent massivement.",
+    bourses:[
+      {nom:"Bourse de l'Excellence BGFIBank",type:"Privée · Entreprise",
+       desc:"Pour les étudiants ivoiriens et des pays d'implantation du groupe BGFIBank. Finance partiellement ou totalement les études supérieures.",
+       montant:"Variable",
+       duree:"1 à 5 ans",
+       niveau:"Licence et Master",
+       nationalite:"Ressortissants des pays BGFIBank",
+       deadline:"Juillet-Août",
+       couverture:["Frais de scolarité","Allocation"],
+       lien:"https://www.bgfibank.com"},
+      {nom:"Bourses Ashinaga",type:"ONG internationale",
+       desc:"Programme pour les étudiants orphelins ou en situation difficile. Couvre les frais de scolarité et de vie dans plusieurs pays partenaires.",
+       montant:"Complet",
+       duree:"Toute la durée du cursus",
+       niveau:"Licence à Master",
+       nationalite:"Pays africains éligibles",
+       deadline:"Février-Mars",
+       couverture:["Scolarité","Logement","Restauration","Voyages","Assurance"],
+       lien:"https://www.ashinaga.org"},
+      {nom:"Bourses canadiennes BCDI 2030",type:"Gouvernementale · Canada",
+       desc:"Programme canadien de bourses pour les étudiants ivoiriens. Finance des formations en français au Canada.",
+       montant:"Complet + allocation",
+       duree:"1 à 4 ans",
+       niveau:"Collège à Doctorat",
+       nationalite:"26 pays africains dont la Côte d'Ivoire",
+       deadline:"Variable",
+       couverture:["Scolarité","Voyage","Allocation","Assurance"],
+       lien:"https://www.boursescanada.ca"},
+      {nom:"Bourses Erasmus+ (Europe)",type:"Union européenne",
+       desc:"Mobilité vers l'Europe en partenariat avec les universités ivoiriennes. Priorité aux masters et doctorats.",
+       montant:"900 €/mois + frais",
+       duree:"6 à 24 mois",
+       niveau:"Master et Doctorat",
+       nationalite:"Monde entier",
+       deadline:"Janvier",
+       couverture:["Frais de scolarité","Allocation mensuelle","Voyage","Assurance"],
+       lien:"https://erasmus-plus.ec.europa.eu"},
+      {nom:"Bourses de la Fondation Mastercard",type:"Fondation internationale",
+       desc:"Programme de bourses pour les étudiants africains. Partenariat avec l'Université Américaine de Paris, Sciences Po, etc.",
+       montant:"Complet",
+       duree:"Toute la durée",
+       niveau:"Licence et Master",
+       nationalite:"Jeunes africains",
+       deadline:"Variable",
+       couverture:["Scolarité","Logement","Restauration","Transport","Mentorat"],
+       lien:"https://mastercardfdn.org"}
+    ]
+  },
+  {
+    id:"cameroun",nom:"Cameroun",flag:"🇨🇲",devise:"XAF",symbole:"FCFA",salaireMin:"41 875 FCFA",
+    secteurs:["BTP & services","Finance & banque","Mines & pétrole","TIC & numérique","Enseignement & santé"],
+    note:"Ingénieur forage débutant : 500 000–800 000 FCFA/mois.",
+    emploi:"Le Cameroun est un carrefour économique en Afrique centrale. Le français est un atout majeur pour l'employabilité. Les secteurs du BTP, de la finance, des mines et du numérique sont les plus porteurs.",
+    bourses:[
+      {nom:"Bourse de l'Excellence BGFIBank",type:"Privée · Entreprise",
+       desc:"Pour les étudiants camerounais et des pays d'implantation du groupe. Finance les études supérieures.",
+       montant:"Variable",
+       duree:"1 à 5 ans",
+       niveau:"Licence et Master",
+       nationalite:"Ressortissants des pays BGFIBank",
+       deadline:"Juillet-Août",
+       couverture:["Frais de scolarité","Allocation"],
+       lien:"https://www.bgfibank.com"},
+      {nom:"Bourses Ashinaga",type:"ONG internationale",
+       desc:"Programme pour les étudiants camerounais en situation difficile. Financement complet des études.",
+       montant:"Complet",
+       duree:"Toute la durée",
+       niveau:"Licence à Master",
+       nationalite:"Pays africains éligibles",
+       deadline:"Février-Mars",
+       couverture:["Scolarité","Logement","Restauration","Voyages","Assurance"],
+       lien:"https://www.ashinaga.org"},
+      {nom:"Bourses canadiennes BCDI 2030",type:"Gouvernementale · Canada",
+       desc:"Programme canadien de bourses pour les étudiants camerounais. Formations en français au Canada.",
+       montant:"Complet + allocation",
+       duree:"1 à 4 ans",
+       niveau:"Collège à Doctorat",
+       nationalite:"26 pays africains dont le Cameroun",
+       deadline:"Variable",
+       couverture:["Scolarité","Voyage","Allocation","Assurance"],
+       lien:"https://www.boursescanada.ca"},
+      {nom:"Bourses Mastercard Foundation",type:"Fondation internationale",
+       desc:"Programme de bourses pour les étudiants africains talentueux. Financement complet incluant mentorat.",
+       montant:"Complet",
+       duree:"Toute la durée",
+       niveau:"Licence et Master",
+       nationalite:"Jeunes africains",
+       deadline:"Variable",
+       couverture:["Scolarité","Logement","Restauration","Transport","Mentorat","Matériel"],
+       lien:"https://mastercardfdn.org"},
+      {nom:"Bourses de la Chine (CSC)",type:"Gouvernementale · Chine",
+       desc:"Le China Scholarship Council offre des bourses complètes aux étudiants camerounais pour étudier en Chine.",
+       montant:"Complet",
+       duree:"1 à 5 ans",
+       niveau:"Licence à Doctorat",
+       nationalite:"Monde entier",
+       deadline:"Décembre-Mars",
+       couverture:["Scolarité","Logement","Allocation mensuelle","Assurance"],
+       lien:"https://www.campuschina.org"}
+    ]
+  },
+  {
+    id:"maroc",nom:"Maroc",flag:"🇲🇦",devise:"MAD",symbole:"DH",salaireMin:"3 111 MAD",
+    secteurs:["Automobile & aéronautique","Énergies renouvelables","Agroalimentaire","Offshoring & IT","Tourisme"],
+    note:"Salaire débutant moyen : 5 000–8 000 MAD/mois.",
+    emploi:"Le Maroc a fait de la transformation digitale un pilier de sa stratégie nationale. Le pays attire de nombreuses entreprises internationales dans l'offshoring IT. Les secteurs de l'automobile, de l'aéronautique et des énergies renouvelables sont en plein essor.",
+    bourses:[
+      {nom:"Bourses de l'État marocain",type:"Gouvernementale · Échange",
+       desc:"Le ministère de l'Enseignement Supérieur du Maroc offre des bourses d'échange vers la Tunisie et l'Algérie, et reçoit des étudiants étrangers dans ses universités.",
+       montant:"Complet",
+       duree:"1 à 5 ans",
+       niveau:"Licence à Doctorat",
+       nationalite:"Étudiants étrangers et marocains",
+       deadline:"Variable",
+       couverture:["Scolarité","Logement universitaire","Allocation"],
+       lien:"https://www.enssup.gov.ma"},
+      {nom:"Bourses du gouvernement français",type:"Gouvernementale · France",
+       desc:"Bourses octroyées par l'ambassade de France au Maroc pour des masters et doctorats en France. Priorité aux filières scientifiques et techniques.",
+       montant:"700 à 1 200 €/mois",
+       duree:"10 à 24 mois",
+       niveau:"Master et Doctorat",
+       nationalite:"Marocains",
+       deadline:"Février-Avril",
+       couverture:["Scolarité","Allocation","Assurance","Logement"],
+       lien:"https://www.campusfrance.org"},
+      {nom:"Bourses de l'AUF - Master Journalisme International",type:"Organisation internationale",
+       desc:"L'Agence Universitaire de la Francophonie offre des bourses complètes pour le Master en journalisme international, avec une formation pratique.",
+       montant:"100%",
+       duree:"1 à 2 ans",
+       niveau:"Master",
+       nationalite:"Pays francophones",
+       deadline:"Variable",
+       couverture:["Scolarité","Allocation","Mobilité"],
+       lien:"https://www.auf.org"},
+      {nom:"Bourses Erasmus+ Afrique",type:"Union européenne",
+       desc:"Programme de mobilité pour les étudiants marocains vers l'Europe. Partenariats avec plusieurs universités européennes.",
+       montant:"850 €/mois",
+       duree:"6 à 24 mois",
+       niveau:"Licence à Doctorat",
+       nationalite:"Monde entier",
+       deadline:"Janvier",
+       couverture:["Scolarité","Allocation","Voyage","Assurance"],
+       lien:"https://erasmus-plus.ec.europa.eu"},
+      {nom:"Bourses d'excellence de l'Université Mohammed VI",type:"Université",
+       desc:"Bourses d'excellence pour les étudiants brillants admis à l'Université Mohammed VI Polytechnique.",
+       montant:"Variable",
+       duree:"Toute la durée",
+       niveau:"Master et Doctorat",
+       nationalite:"Monde entier",
+       deadline:"Variable",
+       couverture:["Scolarité","Logement","Allocation"],
+       lien:"https://www.um6p.ma"}
+    ]
+  },
+  {
+    id:"tunisie",nom:"Tunisie",flag:"🇹🇳",devise:"TND",symbole:"DT",salaireMin:"470 TND",
+    secteurs:["IT & cybersécurité","Automobile","Santé & pharma","Textile technique","Tourisme"],
+    note:"Salaire débutant : 500–1 000 TND/mois.",
+    emploi:"La Tunisie est un pôle technologique en Afrique du Nord. Les ingénieurs tunisiens sont très recherchés en Europe. Le secteur IT recrute massivement, notamment pour l'offshoring. Le français est un critère de sélection quasi incontournable (97%).",
+    bourses:[
+      {nom:"Bourses d'échange Tunisie-Maroc",type:"Gouvernementale · Échange",
+       desc:"115 bourses d'études dans les universités publiques marocaines pour les étudiants tunisiens. Couvre la scolarité et le logement.",
+       montant:"Complet",
+       duree:"1 à 5 ans",
+       niveau:"Licence à Doctorat",
+       nationalite:"Tunisiens",
+       deadline:"Juillet-Août",
+       couverture:["Scolarité","Logement","Allocation mensuelle"],
+       lien:"https://www.mes.tn"},
+      {nom:"Bourses d'échange Tunisie-Algérie",type:"Gouvernementale · Échange",
+       desc:"Programme d'échange étudiant avec l'Algérie. Répartition par filières définie annuellement.",
+       montant:"Complet",
+       duree:"1 à 5 ans",
+       niveau:"Licence à Doctorat",
+       nationalite:"Tunisiens",
+       deadline:"Juillet-Août",
+       couverture:["Scolarité","Logement","Allocation"],
+       lien:"https://www.mes.tn"},
+      {nom:"Bourses du gouvernement français",type:"Gouvernementale · France",
+       desc:"Bourses pour les étudiants tunisiens en master et doctorat en France. Priorité aux filières scientifiques et technologiques.",
+       montant:"700 à 1 200 €/mois",
+       duree:"10 à 24 mois",
+       niveau:"Master et Doctorat",
+       nationalite:"Tunisiens",
+       deadline:"Février-Avril",
+       couverture:["Scolarité","Allocation","Assurance"],
+       lien:"https://www.campusfrance.org"},
+      {nom:"Bourses Erasmus+ Tunisie",type:"Union européenne",
+       desc:"Mobilité vers l'Europe. Partenariats avec plusieurs universités tunisiennes dans le cadre d'Erasmus+ International Credit Mobility.",
+       montant:"850 €/mois",
+       duree:"3 à 12 mois",
+       niveau:"Licence à Doctorat",
+       nationalite:"Étudiants tunisiens",
+       deadline:"Variable selon université",
+       couverture:["Allocation","Voyage","Assurance"],
+       lien:"https://erasmus-plus.ec.europa.eu"},
+      {nom:"Bourses de la Coopération allemande (DAAD)",type:"Gouvernementale · Allemagne",
+       desc:"Le DAAD offre des bourses aux étudiants tunisiens pour des masters et doctorats en Allemagne. Priorité aux filières d'ingénierie et sciences.",
+       montant:"850 à 1 200 €/mois",
+       duree:"1 à 4 ans",
+       niveau:"Master et Doctorat",
+       nationalite:"Tunisiens et autres",
+       deadline:"Variable",
+       couverture:["Scolarité","Allocation","Voyage","Assurance"],
+       lien:"https://www.daad.de"}
+    ]
+  },
+  {
+    id:"canada",nom:"Canada",flag:"🇨🇦",devise:"CAD",symbole:"$",salaireMin:"2 400 $",
+    secteurs:["IT & IA","Santé","Ingénierie","Finance","Énergies renouvelables"],
+    note:"Le Québec recrute massivement des francophones.",
+    emploi:"Le Canada est une destination privilégiée pour les francophones. Le Québec recrute massivement des professionnels francophones. Les secteurs de l'IT, de la santé et de l'ingénierie sont en forte demande.",
+    bourses:[
+      {nom:"Bourses canadiennes BCDI 2030",type:"Gouvernementale · Canada",
+       desc:"Programme de bourses du gouvernement canadien pour les étudiants de 26 pays africains. Finance des formations en français au Canada.",
+       montant:"Complet + allocation",
+       duree:"1 à 4 ans",
+       niveau:"Collège à Doctorat",
+       nationalite:"26 pays africains",
+       deadline:"Variable",
+       couverture:["Scolarité","Voyage","Allocation","Assurance","Logement"],
+       lien:"https://www.boursescanada.ca"},
+      {nom:"Bourses Mastercard Foundation",type:"Fondation internationale",
+       desc:"Programme de bourses complètes pour les étudiants africains. Partenariats avec 30+ universités.",
+       montant:"Complet",
+       duree:"Toute la durée",
+       niveau:"Licence à Master",
+       nationalite:"Jeunes africains",
+       deadline:"Variable",
+       couverture:["Scolarité","Logement","Restauration","Transport","Mentorat"],
+       lien:"https://mastercardfdn.org"},
+      {nom:"Ontario Graduate Scholarship (OGS)",type:"Provinciale · Ontario",
+       desc:"Bourses pour les étudiants diplômés en Ontario. Accessibles aux étudiants internationaux dans certaines universités.",
+       montant:"15 000 $/an",
+       duree:"1 à 2 ans",
+       niveau:"Master et Doctorat",
+       nationalite:"Étudiants en Ontario",
+       deadline:"Variable",
+       couverture:["Frais de scolarité partiels","Aide à la recherche"],
+       lien:"https://osap.gov.on.ca"},
+      {nom:"Bourses d'excellence des universités",type:"Université",
+       desc:"McGill, Université de Montréal, Laval, UQAM... offrent des bourses d'excellence aux étudiants internationaux francophones. Montants variables.",
+       montant:"5 000 à 30 000 $/an",
+       duree:"1 à 4 ans",
+       niveau:"Licence à Doctorat",
+       nationalite:"International",
+       deadline:"Variable",
+       couverture:["Frais de scolarité partiels","Allocation"],
+       lien:"https://www.mcgill.ca/studentaid"},
+      {nom:"Bourses du gouvernement du Québec (FRQ)",type:"Provinciale · Québec",
+       desc:"Fonds de recherche du Québec offrent des bourses pour les études supérieures et la recherche.",
+       montant:"15 000 à 50 000 $/an",
+       duree:"1 à 4 ans",
+       niveau:"Master et Doctorat",
+       nationalite:"International",
+       deadline:"Octobre-Janvier",
+       couverture:["Allocation annuelle","Frais de recherche"],
+       lien:"https://frq.gouv.qc.ca"}
+    ]
+  },
+  {
+    id:"suisse",nom:"Suisse",flag:"🇨🇭",devise:"CHF",symbole:"CHF",salaireMin:"4 500 CHF",
+    secteurs:["Banque & assurance","Pharma & biotech","Horlogerie","IT & fintech","Tourisme"],
+    note:"Salaires parmi les plus élevés au monde.",
+    emploi:"La Suisse offre des salaires parmi les plus élevés au monde. Les secteurs de la banque, de la pharma et de l'IT sont très porteurs. La maîtrise du français est un atout majeur en Suisse romande.",
+    bourses:[
+      {nom:"Bourses de la Confédération suisse",type:"Gouvernementale · Suisse",
+       desc:"Bourses d'études et de recherche pour les étudiants étrangers en Suisse. Attribuées par la Commission fédérale des bourses.",
+       montant:"1 920 CHF/mois",
+       duree:"1 à 3 ans",
+       niveau:"Master et Doctorat",
+       nationalite:"Tous pays (via ambassade)",
+       deadline:"Novembre-Janvier",
+       couverture:["Allocation mensuelle","Assurance","Logement"],
+       lien:"https://www.sbfi.admin.ch"},
+      {nom:"Bourses de l'Université de Genève",type:"Université",
+       desc:"Programmes de bourses d'excellence pour les étudiants internationaux en master.",
+       montant:"Variable",
+       duree:"1 à 2 ans",
+       niveau:"Master",
+       nationalite:"International",
+       deadline:"Février-Avril",
+       couverture:["Scolarité partielle","Allocation"],
+       lien:"https://www.unige.ch"},
+      {nom:"Bourses EPFL Excellence",type:"Université",
+       desc:"L'École Polytechnique Fédérale de Lausanne offre des bourses d'excellence en master pour les étudiants internationaux.",
+       montant:"10 000 à 32 000 CHF",
+       duree:"2 ans",
+       niveau:"Master",
+       nationalite:"International",
+       deadline:"Décembre",
+       couverture:["Frais de scolarité","Allocation"],
+       lien:"https://www.epfl.ch"},
+      {nom:"Bourses ETH Zurich Excellence",type:"Université",
+       desc:"L'ETH Zurich offre des bourses d'excellence pour les masters en sciences et ingénierie.",
+       montant:"12 000 CHF/an + frais",
+       duree:"2 ans",
+       niveau:"Master",
+       nationalite:"International",
+       deadline:"Décembre",
+       couverture:["Scolarité","Allocation mensuelle"],
+       lien:"https://ethz.ch"}
+    ]
+  },
+  {
+    id:"belgique",nom:"Belgique",flag:"🇧🇪",devise:"EUR",symbole:"€",salaireMin:"1 900 €",
+    secteurs:["Chimie & pharma","Logistique portuaire","IT & télécoms","Santé","Agroalimentaire"],
+    note:"Salaire minimum brut ~1 950 €/mois.",
+    emploi:"La Belgique offre un marché de l'emploi stable avec un fort secteur pharmaceutique et logistique. Les salaires sont compétitifs.",
+    bourses:[
+      {nom:"Bourses VLIR-UOS",type:"Coopération belge",
+       desc:"Bourses pour les étudiants de 29 pays en développement. Finance des masters et formations en Belgique flamande.",
+       montant:"Complet + allocation",
+       duree:"1 à 2 ans",
+       niveau:"Master et formation continue",
+       nationalite:"29 pays en développement",
+       deadline:"Février",
+       couverture:["Scolarité","Allocation","Voyage","Assurance"],
+       lien:"https://www.vliruos.be"},
+      {nom:"Bourses ARES (Coopération belge francophone)",type:"Coopération belge",
+       desc:"Bourses de la coopération belge pour les étudiants des pays partenaires en Afrique et ailleurs. Master de spécialisation.",
+       montant:"Complet",
+       duree:"1 à 2 ans",
+       niveau:"Master de spécialisation",
+       nationalite:"Pays partenaires ARES",
+       deadline:"Janvier-Février",
+       couverture:["Scolarité","Allocation","Voyage","Assurance","Logement"],
+       lien:"https://www.ares-ac.be"},
+      {nom:"Bourses de l'Université Catholique de Louvain (UCLouvain)",type:"Université",
+       desc:"Bourses d'excellence pour les étudiants internationaux en master.",
+       montant:"Variable",
+       duree:"1 à 2 ans",
+       niveau:"Master",
+       nationalite:"International",
+       deadline:"Février",
+       couverture:["Scolarité partielle","Allocation"],
+       lien:"https://uclouvain.be"}
+    ]
+  },
+  {
+    id:"luxembourg",nom:"Luxembourg",flag:"🇱🇺",devise:"EUR",symbole:"€",salaireMin:"2 500 €",
+    secteurs:["Finance & banque","IT & data","Audit & conseil","Logistique","Espace"],
+    note:"Hub financier européen majeur.",
+    emploi:"Le Luxembourg est un hub financier européen. Les secteurs de la finance, de l'IT et de l'audit recrutent massivement des profils francophones qualifiés.",
+    bourses:[
+      {nom:"Bourses de l'État luxembourgeois",type:"Gouvernementale · Luxembourg",
+       desc:"Aides financières pour les étudiants résidant au Luxembourg, sous conditions de ressources.",
+       montant:"Variable",
+       duree:"1 à 5 ans",
+       niveau:"Licence à Doctorat",
+       nationalite:"Résidents au Luxembourg",
+       deadline:"Variable",
+       couverture:["Scolarité","Allocation"],
+       lien:"https://guichet.public.lu"},
+      {nom:"Bourses de l'Université du Luxembourg",type:"Université",
+       desc:"Programmes de bourses d'excellence pour les étudiants internationaux en master et doctorat.",
+       montant:"Variable",
+       duree:"1 à 4 ans",
+       niveau:"Master et Doctorat",
+       nationalite:"International",
+       deadline:"Variable",
+       couverture:["Scolarité","Allocation"],
+       lien:"https://www.uni.lu"}
+    ]
+  },
+  {
+    id:"quebec",nom:"Québec",flag:"⚜️",devise:"CAD",symbole:"$",salaireMin:"2 200 $",
+    secteurs:["IT & jeux vidéo","Santé","Génie","Éducation","Aéronautique"],
+    note:"Destination privilégiée des francophones.",
+    emploi:"Le Québec est la destination idéale pour les francophones. Des programmes d'immigration facilitent l'installation des diplômés. Les secteurs de l'IT, de la santé et de l'aéronautique sont en forte demande.",
+    bourses:[
+      {nom:"Bourses d'exemption des droits de scolarité (Québec)",type:"Gouvernementale · Québec",
+       desc:"Programme permettant aux étudiants internationaux francophones de payer les mêmes frais que les Québécois dans certaines régions.",
+       montant:"Économie de 20 000 $/an",
+       duree:"1 à 4 ans",
+       niveau:"Collège à Doctorat",
+       nationalite:"Étudiants francophones",
+       deadline:"Variable",
+       couverture:["Frais de scolarité réduits"],
+       lien:"https://www.quebec.ca"},
+      {nom:"Bourses Mastercard Foundation",type:"Fondation internationale",
+       desc:"Programme de bourses complètes pour les étudiants africains, notamment à l'Université McGill et à l'Université de Montréal.",
+       montant:"Complet",
+       duree:"Toute la durée",
+       niveau:"Licence à Master",
+       nationalite:"Jeunes africains",
+       deadline:"Variable",
+       couverture:["Scolarité","Logement","Restauration","Transport","Mentorat"],
+       lien:"https://mastercardfdn.org"},
+      {nom:"Bourses du FRQ (Fonds de recherche du Québec)",type:"Provinciale · Québec",
+       desc:"Bourses de recherche pour les étudiants aux cycles supérieurs (maîtrise et doctorat) dans toutes les disciplines.",
+       montant:"15 000 à 50 000 $/an",
+       duree:"1 à 4 ans",
+       niveau:"Master et Doctorat",
+       nationalite:"International",
+       deadline:"Octobre-Janvier",
+       couverture:["Allocation annuelle","Frais de recherche"],
+       lien:"https://frq.gouv.qc.ca"}
+    ]
+  },
+  {
+    id:"benin",nom:"Bénin",flag:"🇧🇯",devise:"XOF",symbole:"FCFA",salaireMin:"40 000 FCFA",
+    secteurs:["Agro-business","Port & logistique","Tourisme","Numérique","Énergie"],
+    note:"Le port de Cotonou est un moteur économique majeur.",
+    emploi:"Le Bénin s'appuie sur le port de Cotonou et l'agro-business. Le numérique connaît une croissance forte à Cotonou.",
+    bourses:[
+      {nom:"Bourse de l'Excellence BGFIBank",type:"Privée · Entreprise",desc:"Pour les étudiants béninois. Finance les études supérieures.",montant:"Variable",duree:"1 à 5 ans",niveau:"Licence et Master",nationalite:"Ressortissants des pays BGFIBank",deadline:"Juillet-Août",couverture:["Scolarité","Allocation"],lien:"https://www.bgfibank.com"},
+      {nom:"Bourses canadiennes BCDI 2030",type:"Gouvernementale · Canada",desc:"Programme canadien pour les étudiants béninois.",montant:"Complet",duree:"1 à 4 ans",niveau:"Collège à Doctorat",nationalite:"26 pays africains",deadline:"Variable",couverture:["Scolarité","Voyage","Allocation"],lien:"https://www.boursescanada.ca"}
+    ]
+  },
+  {
+    id:"burkina",nom:"Burkina Faso",flag:"🇧🇫",devise:"XOF",symbole:"FCFA",salaireMin:"34 664 FCFA",
+    secteurs:["Mines (or)","Agriculture","ONG & développement","Artisanat","Numérique"],
+    note:"L'or représente plus de 70% des exportations.",
+    emploi:"Le Burkina Faso est un producteur d'or majeur. Les ONG internationales recrutent régulièrement dans les secteurs du développement.",
+    bourses:[
+      {nom:"Bourses VLIR-UOS",type:"Coopération belge",desc:"Bourses ouvertes au Burkina Faso.",montant:"Complet",duree:"1 à 2 ans",niveau:"Master",nationalite:"Pays partenaires",deadline:"Février",couverture:["Scolarité","Allocation","Voyage"],lien:"https://www.vliruos.be"},
+      {nom:"Bourses canadiennes BCDI 2030",type:"Gouvernementale · Canada",desc:"Programme canadien pour les étudiants burkinabè.",montant:"Complet",duree:"1 à 4 ans",niveau:"Collège à Doctorat",nationalite:"26 pays africains",deadline:"Variable",couverture:["Scolarité","Voyage","Allocation"],lien:"https://www.boursescanada.ca"}
+    ]
+  },
+  {
+    id:"mali",nom:"Mali",flag:"🇲🇱",devise:"XOF",symbole:"FCFA",salaireMin:"31 545 FCFA",
+    secteurs:["Mines (or)","Agriculture (coton)","Élevage","ONG","Construction"],
+    note:"Le Mali est le 3e producteur d'or d'Afrique.",
+    emploi:"Le Mali est un producteur d'or majeur. Les ONG internationales et le secteur minier recrutent.",
+    bourses:[
+      {nom:"Bourses VLIR-UOS",type:"Coopération belge",desc:"Bourses ouvertes au Mali.",montant:"Complet",duree:"1 à 2 ans",niveau:"Master",nationalite:"Pays partenaires",deadline:"Février",couverture:["Scolarité","Allocation","Voyage"],lien:"https://www.vliruos.be"},
+      {nom:"Bourses canadiennes BCDI 2030",type:"Gouvernementale · Canada",desc:"Programme canadien pour les étudiants maliens.",montant:"Complet",duree:"1 à 4 ans",niveau:"Collège à Doctorat",nationalite:"26 pays africains",deadline:"Variable",couverture:["Scolarité","Voyage","Allocation"],lien:"https://www.boursescanada.ca"}
+    ]
+  },
+  {
+    id:"niger",nom:"Niger",flag:"🇳🇪",devise:"XOF",symbole:"FCFA",salaireMin:"30 047 FCFA",
+    secteurs:["Mines (uranium)","Élevage","Agriculture","Énergie","ONG"],
+    note:"Le Niger possède d'importantes réserves d'uranium.",
+    emploi:"Le Niger exploite d'importantes réserves d'uranium. Les secteurs de l'énergie et des ONG recrutent.",
+    bourses:[
+      {nom:"Bourses VLIR-UOS",type:"Coopération belge",desc:"Bourses ouvertes au Niger.",montant:"Complet",duree:"1 à 2 ans",niveau:"Master",nationalite:"Pays partenaires",deadline:"Février",couverture:["Scolarité","Allocation","Voyage"],lien:"https://www.vliruos.be"},
+      {nom:"Bourses canadiennes BCDI 2030",type:"Gouvernementale · Canada",desc:"Programme canadien pour les étudiants nigériens.",montant:"Complet",duree:"1 à 4 ans",niveau:"Collège à Doctorat",nationalite:"26 pays africains",deadline:"Variable",couverture:["Scolarité","Voyage","Allocation"],lien:"https://www.boursescanada.ca"}
+    ]
+  },
+  {
+    id:"guinee",nom:"Guinée",flag:"🇬🇳",devise:"GNF",symbole:"GNF",salaireMin:"550 000 GNF",
+    secteurs:["Mines (bauxite)","Agriculture","Énergie","BTP","Numérique"],
+    note:"La Guinée détient les plus grandes réserves mondiales de bauxite.",
+    emploi:"La Guinée détient les plus grandes réserves mondiales de bauxite. Le secteur minier domine l'économie.",
+    bourses:[
+      {nom:"Bourses de la Fondation Mastercard",type:"Fondation internationale",desc:"Programme pour les étudiants africains.",montant:"Complet",duree:"Toute la durée",niveau:"Licence et Master",nationalite:"Jeunes africains",deadline:"Variable",couverture:["Scolarité","Logement","Restauration"],lien:"https://mastercardfdn.org"}
+    ]
+  },
+  {
+    id:"togo",nom:"Togo",flag:"🇹🇬",devise:"XOF",symbole:"FCFA",salaireMin:"35 000 FCFA",
+    secteurs:["Port & logistique","Phosphates","Agriculture","Numérique","Commerce"],
+    note:"Lomé est un hub logistique majeur en Afrique de l'Ouest.",
+    emploi:"Lomé est un hub logistique majeur en Afrique de l'Ouest. Le port et les services dominent l'économie.",
+    bourses:[
+      {nom:"Bourse de l'Excellence BGFIBank",type:"Privée · Entreprise",desc:"Pour les étudiants togolais.",montant:"Variable",duree:"1 à 5 ans",niveau:"Licence et Master",nationalite:"Ressortissants des pays BGFIBank",deadline:"Juillet-Août",couverture:["Scolarité","Allocation"],lien:"https://www.bgfibank.com"},
+      {nom:"Bourses canadiennes BCDI 2030",type:"Gouvernementale · Canada",desc:"Programme canadien pour les étudiants togolais.",montant:"Complet",duree:"1 à 4 ans",niveau:"Collège à Doctorat",nationalite:"26 pays africains",deadline:"Variable",couverture:["Scolarité","Voyage","Allocation"],lien:"https://www.boursescanada.ca"}
+    ]
+  },
+  {
+    id:"gabon",nom:"Gabon",flag:"🇬🇦",devise:"XAF",symbole:"FCFA",salaireMin:"150 000 FCFA",
+    secteurs:["Pétrole & gaz","Mines","Bois","Écotourisme","Services financiers"],
+    note:"Le Gabon est l'un des pays les plus riches d'Afrique par habitant.",
+    emploi:"Le Gabon est riche en pétrole et en bois. Les salaires sont parmi les plus élevés d'Afrique centrale.",
+    bourses:[
+      {nom:"Bourse de l'Excellence BGFIBank",type:"Privée · Entreprise",desc:"Pour les étudiants gabonais.",montant:"Variable",duree:"1 à 5 ans",niveau:"Licence et Master",nationalite:"Ressortissants des pays BGFIBank",deadline:"Juillet-Août",couverture:["Scolarité","Allocation"],lien:"https://www.bgfibank.com"},
+      {nom:"Bourses canadiennes BCDI 2030",type:"Gouvernementale · Canada",desc:"Programme canadien pour les étudiants gabonais.",montant:"Complet",duree:"1 à 4 ans",niveau:"Collège à Doctorat",nationalite:"26 pays africains",deadline:"Variable",couverture:["Scolarité","Voyage","Allocation"],lien:"https://www.boursescanada.ca"}
+    ]
+  },
+  {
+    id:"congo",nom:"Congo-Brazzaville",flag:"🇨🇬",devise:"XAF",symbole:"FCFA",salaireMin:"120 000 FCFA",
+    secteurs:["Pétrole","Bois","Mines","Télécoms","BTP"],
+    note:"Le pétrole représente 80% des exportations.",
+    emploi:"Le pétrole représente 80% des exportations. Les secteurs du bois et des télécoms recrutent également.",
+    bourses:[
+      {nom:"Bourse de l'Excellence BGFIBank",type:"Privée · Entreprise",desc:"Pour les étudiants congolais.",montant:"Variable",duree:"1 à 5 ans",niveau:"Licence et Master",nationalite:"Ressortissants des pays BGFIBank",deadline:"Juillet-Août",couverture:["Scolarité","Allocation"],lien:"https://www.bgfibank.com"}
+    ]
+  },
+  {
+    id:"rdc",nom:"RD Congo",flag:"🇨🇩",devise:"CDF",symbole:"FC",salaireMin:"80 000 FC",
+    secteurs:["Mines (cuivre, cobalt)","Agriculture","Télécoms","ONG","Énergie"],
+    note:"La RDC possède 70% du cobalt mondial.",
+    emploi:"La RDC possède 70% du cobalt mondial, essentiel pour les batteries. Les ONG internationales sont très présentes.",
+    bourses:[
+      {nom:"Bourses de la Fondation Mastercard",type:"Fondation internationale",desc:"Programme pour les étudiants africains.",montant:"Complet",duree:"Toute la durée",niveau:"Licence et Master",nationalite:"Jeunes africains",deadline:"Variable",couverture:["Scolarité","Logement","Restauration"],lien:"https://mastercardfdn.org"},
+      {nom:"Bourses VLIR-UOS",type:"Coopération belge",desc:"Bourses ouvertes à la RDC.",montant:"Complet",duree:"1 à 2 ans",niveau:"Master",nationalite:"Pays partenaires",deadline:"Février",couverture:["Scolarité","Allocation","Voyage"],lien:"https://www.vliruos.be"}
+    ]
+  },
+  {
+    id:"algerie",nom:"Algérie",flag:"🇩🇿",devise:"DZD",symbole:"DA",salaireMin:"20 000 DA",
+    secteurs:["Pétrole & gaz","Énergie solaire","Agriculture","BTP","IT"],
+    note:"Les hydrocarbures représentent 95% des exportations.",
+    emploi:"Les hydrocarbures représentent 95% des exportations. L'État investit dans les énergies renouvelables.",
+    bourses:[
+      {nom:"Bourses d'échange Algérie-Tunisie",type:"Gouvernementale · Échange",desc:"Programme d'échange étudiant avec la Tunisie.",montant:"Complet",duree:"1 à 5 ans",niveau:"Licence à Doctorat",nationalite:"Algériens",deadline:"Juillet-Août",couverture:["Scolarité","Logement","Allocation"],lien:"https://www.mesrs.dz"},
+      {nom:"Bourses du gouvernement français",type:"Gouvernementale · France",desc:"Bourses pour les étudiants algériens en master et doctorat.",montant:"700 à 1 200 €/mois",duree:"10 à 24 mois",niveau:"Master et Doctorat",nationalite:"Algériens",deadline:"Février-Avril",couverture:["Scolarité","Allocation","Assurance"],lien:"https://www.campusfrance.org"}
+    ]
+  },
+  {
+    id:"mauritanie",nom:"Mauritanie",flag:"🇲🇷",devise:"MRU",symbole:"MRU",salaireMin:"10 000 MRU",
+    secteurs:["Mines (fer)","Pêche","Pétrole & gaz","Élevage","Énergie"],
+    note:"La pêche représente 25% des recettes d'exportation.",
+    emploi:"La Mauritanie exploite le fer, le gaz et la pêche. Le gaz de GTA devrait transformer l'économie.",
+    bourses:[
+      {nom:"Bourses canadiennes BCDI 2030",type:"Gouvernementale · Canada",desc:"Programme canadien pour les étudiants mauritaniens.",montant:"Complet",duree:"1 à 4 ans",niveau:"Collège à Doctorat",nationalite:"26 pays africains",deadline:"Variable",couverture:["Scolarité","Voyage","Allocation"],lien:"https://www.boursescanada.ca"}
+    ]
+  },
+  {
+    id:"madagascar",nom:"Madagascar",flag:"🇲🇬",devise:"MGA",symbole:"Ar",salaireMin:"200 000 Ar",
+    secteurs:["Agroalimentaire","Textile","Tourisme","Mines","Numérique"],
+    note:"1er producteur mondial de vanille.",
+    emploi:"Madagascar est le 1er producteur mondial de vanille. Le textile emploie 200 000 personnes.",
+    bourses:[
+      {nom:"Bourses de la Fondation Mastercard",type:"Fondation internationale",desc:"Programme pour les étudiants africains.",montant:"Complet",duree:"Toute la durée",niveau:"Licence et Master",nationalite:"Jeunes africains",deadline:"Variable",couverture:["Scolarité","Logement","Restauration"],lien:"https://mastercardfdn.org"},
+      {nom:"Bourses du gouvernement français",type:"Gouvernementale · France",desc:"Bourses pour les étudiants malgaches.",montant:"700 à 1 200 €/mois",duree:"10 à 24 mois",niveau:"Master et Doctorat",nationalite:"Malgaches",deadline:"Février-Avril",couverture:["Scolarité","Allocation","Assurance"],lien:"https://www.campusfrance.org"}
+    ]
+  },
+  {
+    id:"ilemaurice",nom:"Île Maurice",flag:"🇲🇺",devise:"MUR",symbole:"Rs",salaireMin:"12 000 Rs",
+    secteurs:["Finance offshore","Tourisme","IT & BPO","Textile","Agro-industrie"],
+    note:"Hub financier de l'océan Indien.",
+    emploi:"Hub financier de l'océan Indien. Le secteur IT/BPO recrute massivement des francophones.",
+    bourses:[
+      {nom:"Bourses du gouvernement mauricien",type:"Gouvernementale · Maurice",desc:"Bourses pour les étudiants internationaux dans les universités mauriciennes.",montant:"Variable",duree:"1 à 5 ans",niveau:"Licence à Doctorat",nationalite:"International",deadline:"Variable",couverture:["Scolarité","Allocation"],lien:"https://education.govmu.org"}
+    ]
+  },
+  {
+    id:"djibouti",nom:"Djibouti",flag:"🇩🇯",devise:"DJF",symbole:"Fdj",salaireMin:"50 000 Fdj",
+    secteurs:["Ports & logistique","Énergie","Banque","BTP","Télécoms"],
+    note:"Position stratégique sur le détroit de Bab-el-Mandeb.",
+    emploi:"Djibouti est un hub logistique majeur grâce à sa position stratégique. Les ports et les bases militaires étrangères dominent.",
+    bourses:[
+      {nom:"Bourses de la Fondation Mastercard",type:"Fondation internationale",desc:"Programme pour les étudiants africains.",montant:"Complet",duree:"Toute la durée",niveau:"Licence et Master",nationalite:"Jeunes africains",deadline:"Variable",couverture:["Scolarité","Logement","Restauration"],lien:"https://mastercardfdn.org"}
+    ]
+  },
+  {
+    id:"monaco",nom:"Monaco",flag:"🇲🇨",devise:"EUR",symbole:"€",salaireMin:"2 200 €",
+    secteurs:["Finance & gestion de patrimoine","Immobilier","Tourisme de luxe","Santé","Événementiel"],
+    note:"Salaires élevés, secteur luxe et finance très développé.",
+    emploi:"Monaco est un pôle de la finance et du luxe. Les salaires sont très élevés. Le français est la langue officielle.",
+    bourses:[
+      {nom:"Bourses de la Fondation Prince Albert II",type:"Fondation",desc:"Bourses pour les étudiants internationaux engagés dans l'environnement.",montant:"Variable",duree:"1 à 2 ans",niveau:"Master et Doctorat",nationalite:"International",deadline:"Variable",couverture:["Scolarité","Allocation"],lien:"https://www.fpa2.org"}
+    ]
+  }
+];
+
+/* ═══════════════════════════════════════════════
+   ÉCOLES PRESTIGIEUSES PAR FILIÈRE ET PAYS
+   ═══════════════════════════════════════════════ */
+const ECOLES = {
+  info: {
+    france:[{nom:"École 42",detail:"Paris — Classée meilleure école d'informatique française. Formation gratuite et innovante.",badge:"prestige"},{nom:"EPITA",detail:"Paris — École d'ingénieurs en informatique.",badge:"prestige"},{nom:"Télécom Paris",detail:"Paris — Grande école d'ingénieurs du numérique.",badge:"public"}],
+    senegal:[{nom:"Dakar Institute of Technology",detail:"Dakar — Pionnier Big Data et IA en Afrique de l'Ouest. Partenariats EPITA, IESTIA.",badge:"prestige"},{nom:"BEM Tech Dakar",detail:"Dakar — En partenariat avec JUNIA.",badge:"prive"}],
+    maroc:[{nom:"1337",detail:"Casablanca — Campus de l'école 42 au Maroc. Formation gratuite.",badge:"prestige"},{nom:"EMINES",detail:"Casablanca — Université Mohammed VI Polytechnique.",badge:"prestige"}],
+    tunisie:[{nom:"ENSI",detail:"Tunis — École Nationale des Sciences de l'Informatique.",badge:"public"},{nom:"Université SESAME",detail:"Tunis — Établissement privé.",badge:"prive"}],
+    canada:[{nom:"Université de Montréal",detail:"Montréal — DIRO, département d'informatique et de recherche opérationnelle.",badge:"prestige"},{nom:"Université Laval",detail:"Québec — Faculté des sciences et de génie.",badge:"public"}]
+  },
+  sante: {
+    france:[{nom:"Université Paris-Saclay",detail:"Faculté de médecine, classée parmi les meilleures au monde.",badge:"prestige"},{nom:"Sorbonne Université",detail:"Faculté de médecine Pierre et Marie Curie.",badge:"public"}],
+    senegal:[{nom:"Université Cheikh Anta Diop",detail:"Dakar — Faculté de Médecine, Pharmacie et Odontologie.",badge:"public"},{nom:"USSD",detail:"Dakar — Université des Sciences de la Santé.",badge:"prive"}],
+    maroc:[{nom:"Université Mohammed VI des Sciences de la Santé",detail:"Casablanca — Référence en formation médicale en Afrique.",badge:"prestige"},{nom:"Faculté de Médecine de Rabat",detail:"Rabat — Université Mohammed V.",badge:"public"}],
+    tunisie:[{nom:"Faculté de Médecine de Tunis",detail:"Tunis — Université de Tunis El Manar.",badge:"public"},{nom:"Faculté des Sciences de la Santé Sousse",detail:"Sousse — Formation médicale et paramédicale.",badge:"public"}]
+  },
+  ingenieur: {
+    france:[{nom:"École Polytechnique",detail:"Palaiseau — L'une des plus prestigieuses écoles d'ingénieurs au monde.",badge:"prestige"},{nom:"INSA Rennes",detail:"Rennes — Grande école d'ingénieurs publique.",badge:"public"}],
+    senegal:[{nom:"BEM Tech Dakar",detail:"Dakar — En partenariat avec JUNIA.",badge:"prestige"}],
+    maroc:[{nom:"EMINES",detail:"Casablanca — Université Mohammed VI Polytechnique / École des Mines de Paris.",badge:"prestige"},{nom:"EIGSI Casablanca",detail:"Casablanca — Génie des systèmes industriels.",badge:"prive"}],
+    tunisie:[{nom:"ENIT",detail:"Tunis — École Nationale d'Ingénieurs de Tunis.",badge:"public"},{nom:"ENIS",detail:"Sfax — École Nationale d'Ingénieurs de Sfax.",badge:"public"}]
+  },
+  commerce: {
+    france:[{nom:"HEC Paris",detail:"Jouy-en-Josas — L'une des meilleures business schools au monde.",badge:"prestige"},{nom:"ESSEC Business School",detail:"Cergy — Triple couronne d'accréditations.",badge:"prestige"},{nom:"KEDGE Business School",detail:"Marseille/Bordeaux — Campus à Dakar.",badge:"prestige"}],
+    senegal:[{nom:"BEM Dakar",detail:"Dakar — N°1 des Business Schools en Afrique de l'Ouest.",badge:"prestige"},{nom:"MBS Dakar",detail:"Dakar — Campus de Montpellier Business School.",badge:"prestige"}],
+    maroc:[{nom:"ESSEC Afrique",detail:"Rabat — Filiale de l'ESSEC Business School.",badge:"prestige"},{nom:"TBS Casablanca",detail:"Casablanca — Campus de Toulouse Business School.",badge:"prestige"}],
+    tunisie:[{nom:"IHEC Carthage",detail:"Tunis — Institut des Hautes Études Commerciales.",badge:"public"},{nom:"ESCA Tunis",detail:"Tunis — École Supérieure de Commerce et des Affaires.",badge:"prive"}]
+  },
+  droit: {
+    france:[{nom:"Université Paris II Panthéon-Assas",detail:"Paris — Première université de droit en France.",badge:"prestige"},{nom:"École de droit de la Sorbonne",detail:"Paris — Partenariat à Fès (Maroc) pour un master en droit des affaires.",badge:"prestige"}],
+    senegal:[{nom:"Université Cheikh Anta Diop",detail:"Dakar — Faculté des Sciences Juridiques et Politiques.",badge:"public"}],
+    maroc:[{nom:"Université Euromed de Fès",detail:"Fès — Partenariat avec l'École de droit de la Sorbonne.",badge:"prestige"}],
+    tunisie:[{nom:"Faculté des Sciences Juridiques de Tunis",detail:"Tunis — Université de Carthage.",badge:"public"}]
+  },
+  btp: {
+    france:[{nom:"ESTP Paris",detail:"Paris — Grande école d'ingénieurs de la construction depuis 1891.",badge:"prestige"},{nom:"ISA BTP",detail:"Pau — École d'ingénieurs en bâtiment et travaux publics.",badge:"public"}],
+    cotedivoire:[{nom:"INP-HB",detail:"Yamoussoukro — Institut National Polytechnique Félix Houphouët-Boigny.",badge:"prestige"},{nom:"ESTP Dakar",detail:"Dakar — Campus de l'ESTP Paris.",badge:"prestige"}],
+    senegal:[{nom:"ESTP Dakar",detail:"Dakar — Bachelor manager de projet immobilier.",badge:"prestige"}]
+  },
+  arts: {
+    france:[{nom:"École des Gobelins",detail:"Paris — Référence mondiale en cinéma d'animation et design.",badge:"prestige"},{nom:"Les Beaux-Arts de Paris",detail:"Paris — École nationale supérieure des Beaux-Arts.",badge:"prestige"},{nom:"Strate École de Design",detail:"Sèvres — Design industriel.",badge:"prive"}],
+    senegal:[{nom:"École Nationale des Arts",detail:"Dakar — Métiers artistiques et culturels.",badge:"public"}],
+    maroc:[{nom:"ESAV Marrakech",detail:"Marrakech — École Supérieure des Arts Visuels.",badge:"prestige"},{nom:"École des Beaux-Arts de Casablanca",detail:"Casablanca — Formation artistique.",badge:"public"}]
+  },
+  communication: {
+    france:[{nom:"CELSA",detail:"Sorbonne Université — École de journalisme et communication.",badge:"prestige"},{nom:"EPJT Tours",detail:"Tours — École publique de journalisme. Master francophone en journalisme international avec DW Akademie.",badge:"public"}],
+    senegal:[{nom:"CESTI",detail:"Dakar — Centre d'Études des Sciences et Techniques de l'Information.",badge:"public"}],
+    maroc:[{nom:"ISIC",detail:"Rabat — Institut Supérieur de l'Information et de la Communication.",badge:"public"}]
+  },
+  agro: {
+    france:[{nom:"AgroParisTech",detail:"Paris — Grande école d'ingénieurs en agroalimentaire.",badge:"prestige"},{nom:"Montpellier SupAgro",detail:"Montpellier — École d'ingénieurs en agronomie.",badge:"public"}],
+    senegal:[{nom:"ENSA",detail:"Thiès — École Nationale Supérieure d'Agriculture.",badge:"public"}],
+    cotedivoire:[{nom:"INP-HB",detail:"Yamoussoukro — Département Agroalimentaire.",badge:"public"}]
+  },
+  hotellerie: {
+    france:[{nom:"Institut Paul Bocuse",detail:"Lyon — École de management hôtelier et culinaire de renommée mondiale.",badge:"prestige"},{nom:"Ferrandi Paris",detail:"Paris — École de gastronomie et de management hôtelier.",badge:"prestige"}],
+    senegal:[{nom:"Ecole Hôtelière de Dakar",detail:"Dakar — Métiers de l'hôtellerie et de la restauration.",badge:"public"}]
+  },
+  social: {
+    france:[{nom:"Sciences Po Paris",detail:"Paris — Référence en sciences sociales et politiques.",badge:"prestige"},{nom:"Université Paris Cité",detail:"Paris — Faculté de psychologie.",badge:"public"}],
+    senegal:[{nom:"Université Cheikh Anta Diop",detail:"Dakar — Département de psychologie.",badge:"public"}],
+    maroc:[{nom:"Université Mohammed V",detail:"Rabat — Faculté des Sciences de l'Éducation.",badge:"public"}]
+  },
+  logistique: {
+    france:[{nom:"KEDGE Business School",detail:"Marseille — Programme en supply chain management.",badge:"prestige"}],
+    senegal:[{nom:"BEM Dakar",detail:"Dakar — Logistique et transport.",badge:"prestige"}],
+    cotedivoire:[{nom:"INP-HB",detail:"Yamoussoukro — Département Logistique et Transport.",badge:"public"}]
+  },
+  finance: {
+    france:[{nom:"HEC Paris",detail:"Jouy-en-Josas — Master en finance de renommée mondiale.",badge:"prestige"},{nom:"ESSEC Business School",detail:"Cergy — Programme en finance.",badge:"prestige"}],
+    maroc:[{nom:"ESSEC Afrique",detail:"Rabat — Filiale de l'ESSEC Business School.",badge:"prestige"}]
+  },
+  tourisme: {
+    france:[{nom:"Institut Paul Bocuse",detail:"Lyon — Management hôtelier et tourisme.",badge:"prestige"},{nom:"Vatel",detail:"Paris — École internationale de management hôtelier.",badge:"prestige"}],
+    maroc:[{nom:"Institut Supérieur de Tourisme",detail:"Tanger — Formation en tourisme.",badge:"public"}]
+  }
+};
+
+/* ═══════════════════════════════════════════════
+   PROFILS
+   ═══════════════════════════════════════════════ */
+const PROFILS = {
+  A:{nom:"🏗️ Bâtisseur",forces:"Concret, organisé, technique, fiable",filieres:["BTS/BUT génie civil","Mécanique","Électrotechnique","Informatique","Logistique"],metiers:["Technicien","Chef de chantier","Ingénieur BTP","Développeur","Logisticien"],piege:"Choisir une filière trop théorique"},
+  B:{nom:"🔬 Analyste",forces:"Logique, rigoureux, curieux, précis",filieres:["Prépa scientifique","Licence maths/physique/info","Médecine","École d'ingénieur","Data science"],metiers:["Ingénieur R&D","Data scientist","Chercheur","Médecin","Actuaire"],piege:"Négliger le contact humain"},
+  C:{nom:"🎨 Créatif",forces:"Imaginatif, sensible, expressif, original",filieres:["Arts appliqués","Design","Communication","Audiovisuel","Architecture"],metiers:["Designer UX/UI","Directeur artistique","Réalisateur","Community manager","Architecte"],piege:"Ne pas se former aux outils professionnels"},
+  D:{nom:"💚 Humain",forces:"Empathique, patient, à l'écoute, bienveillant",filieres:["Santé","Social","Éducation","Psychologie","RH"],metiers:["Infirmier","Enseignant","Psychologue","Travailleur social","RH"],piege:"S'oublier soi-même"},
+  E:{nom:"👑 Leader",forces:"Ambitieux, convaincant, meneur, charismatique",filieres:["Commerce","Gestion","Droit","Sciences Po","Entrepreneuriat"],metiers:["Chef de projet","Entrepreneur","Directeur commercial","Juriste","Manager"],piege:"Vouloir aller vite sans compétences"},
+  F:{nom:"🌍 Explorateur",forces:"Adaptable, audacieux, mobile, ouvert",filieres:["Langues","Tourisme","Environnement","Géographie","Logistique"],metiers:["Guide","Journaliste","Chef de produit international","Chargé de mission environnement"],piege:"La dispersion"}
+};
+
+const PROFIL_QUESTIONS = [
+  {q:"Dans un projet de groupe, je suis celui qui…",options:{A:"organise le plan et le matériel",B:"analyse les données et vérifie la logique",C:"propose l'idée originale et le design",D:"écoute et motive les autres",E:"prend la direction et défend le projet",F:"cherche des idées ailleurs et teste le terrain"}},
+  {q:"Ma matière préférée…",options:{A:"technologie / atelier",B:"maths / sciences",C:"arts / lettres / philo",D:"SVT / social / psychologie",E:"éco / droit / gestion",F:"langues / histoire-géo"}},
+  {q:"Ce qui me procure le plus de satisfaction…",options:{A:"construire ou réparer quelque chose",B:"résoudre un problème complexe",C:"créer ou imaginer",D:"aider ou transmettre",E:"convaincre ou diriger",F:"découvrir ou voyager"}},
+  {q:"Mon environnement idéal…",options:{A:"chantier / atelier / labo",B:"bureau / centre de recherche",C:"studio / espace créatif",D:"école / hôpital / association",E:"entreprise / terrain de vente",F:"extérieur / international"}},
+  {q:"On me décrit souvent comme…",options:{A:"pratique et fiable",B:"logique et curieux",C:"imaginatif et sensible",D:"empathique et patient",E:"ambitieux et charismatique",F:"adaptable et audacieux"}},
+  {q:"Une machine tombe en panne. Je…",options:{A:"démonte et répare",B:"cherche la cause technique",C:"imagine une amélioration",D:"m'assure que personne n'est blessé",E:"décide qui fait quoi",F:"cherche une solution alternative"}},
+  {q:"Le type de formation qui m'attire…",options:{A:"BTS / BUT technique",B:"licence ou prépa scientifique",C:"école d'art / design / communication",D:"licence santé / social / éducation",E:"école de commerce / droit / Sciences Po",F:"licence langues / tourisme / environnement"}},
+  {q:"Dans 10 ans, je me vois…",options:{A:"chef de chantier ou technicien expert",B:"ingénieur, chercheur ou data scientist",C:"designer ou directeur artistique",D:"soignant, enseignant ou psychologue",E:"entrepreneur, manager ou juriste",F:"chef de projet international, guide ou journaliste"}},
+  {q:"Ce que je veux éviter…",options:{A:"l'instabilité et le flou",B:"l'absence de logique",C:"la routine et la censure",D:"la violence et l'indifférence",E:"la dépendance et l'échec",F:"l'enfermement et la monotonie"}},
+  {q:"Mon moteur profond…",options:{A:"la stabilité et l'utilité concrète",B:"la compréhension et la précision",C:"l'expression et la liberté",D:"l'aide et le lien humain",E:"l'impact et la réussite",F:"la découverte et l'aventure"}}
+];
+
+const S = {
+  fr:{d:2100,m:3200,a10:4800},be:{d:2200,m:3400,a10:5000},ch:{d:5500,m:8000,a10:12000},lu:{d:3500,m:5500,a10:8000},mc:{d:4200,m:6000,a10:9000},ca:{d:3500,m:5200,a10:7800},qc:{d:3300,m:5000,a10:7500},sn:{d:300000,m:530000,a10:920000},ci:{d:250000,m:450000,a10:800000},cm:{d:200000,m:350000,a10:650000},bj:{d:180000,m:320000,a10:600000},bf:{d:160000,m:280000,a10:520000},ml:{d:150000,m:260000,a10:480000},ne:{d:140000,m:250000,a10:450000},gn:{d:2500000,m:4500000,a10:8000000},tg:{d:170000,m:300000,a10:560000},ga:{d:300000,m:500000,a10:850000},cg:{d:280000,m:480000,a10:800000},cd:{d:400000,m:700000,a10:1200000},ma:{d:6000,m:11000,a10:20000},dz:{d:40000,m:70000,a10:130000},tn:{d:700,m:1300,a10:2400},mr:{d:15000,m:25000,a10:45000},mg:{d:800000,m:1500000,a10:2800000},mu:{d:15000,m:25000,a10:45000},dj:{d:80000,m:130000,a10:220000}
+};
+const CKEY = {france:"fr",belgique:"be",suisse:"ch",luxembourg:"lu",monaco:"mc",canada:"ca",quebec:"qc",senegal:"sn",cotedivoire:"ci",cameroun:"cm",benin:"bj",burkina:"bf",mali:"ml",niger:"ne",guinee:"gn",togo:"tg",gabon:"ga",congo:"cg",rdc:"cd",maroc:"ma",algerie:"dz",tunisie:"tn",mauritanie:"mr",madagascar:"mg",ilemaurice:"mu",djibouti:"dj"};
+
+function salFromBase(md, mm, ma){
+  const o = {};
+  for(const k in S) o[k] = {d:Math.round(S[k].d*md), m:Math.round(S[k].m*mm), a10:Math.round(S[k].a10*ma)};
+  return o;
+}
+
+const FILIERES = [
+  {id:"info",nom:"Informatique & Développement",categorie:"tech",tag:"Numérique",tagClass:"tag-tech",duree:"Bac+2 à Bac+5",niveaux:["BTS SIO","BUT Informatique","Licence Info","Master Info","École d'ingénieur"],debouches:["Développeur web/mobile","Développeur full-stack","Data analyst","Data scientist","Expert cybersécurité","Architecte cloud","Chef de projet IT","DevOps engineer","Ingénieur IA"],perspective:"high",perspectiveLabel:"Croissance forte",perspectiveDetail:"L'emploi IT est en plein essor mondial. La data, l'IA et la cybersécurité sont les segments les plus porteurs.",reconversion:"Évolution vers management, expertise technique ou entrepreneuriat.",secteurs:["Start-ups","Grandes entreprises","Banques","Santé","Industrie"],salaires:salFromBase(1.0,1.0,1.0),ecoles:"info"},
+  {id:"sante",nom:"Santé & Soins",categorie:"sante",tag:"Santé",tagClass:"tag-sante",duree:"Bac+3 à Bac+10",niveaux:["IFSI (infirmier)","Licence santé","Médecine","Pharmacie","Kinésithérapie"],debouches:["Infirmier","Médecin généraliste","Médecin spécialiste","Pharmacien","Kinésithérapeute","Sage-femme","Dentiste"],perspective:"high",perspectiveLabel:"Recrutement prioritaire",perspectiveDetail:"La santé est un secteur en tension dans tous les pays. Les besoins augmentent avec le vieillissement démographique.",reconversion:"Spécialisation possible. Reconversion vers la santé publique ou l'industrie pharmaceutique.",secteurs:["Hôpitaux","Cliniques","EHPAD","Cabinets libéraux","Industrie pharmaceutique"],salaires:salFromBase(0.90,0.88,0.88),ecoles:"sante"},
+  {id:"ingenieur",nom:"Ingénierie & Sciences",categorie:"science",tag:"Sciences",tagClass:"tag-science",duree:"Bac+5",niveaux:["Prépa","École d'ingénieur","Master scientifique"],debouches:["Ingénieur R&D","Ingénieur production","Chef de projet industriel","Consultant technique","Ingénieur énergie","Ingénieur qualité"],perspective:"medium",perspectiveLabel:"Stable avec tension",perspectiveDetail:"L'industrie recrute difficilement dans tous les pays. Les ingénieurs sont très recherchés.",reconversion:"Évolution vers le management, l'expertise ou le conseil.",secteurs:["Aéronautique","Énergie","Automobile","Conseil","Mines"],salaires:salFromBase(1.14,1.13,1.08),ecoles:"ingenieur"},
+  {id:"commerce",nom:"Commerce & Gestion",categorie:"commerce",tag:"Commerce",tagClass:"tag-commerce",duree:"Bac+2 à Bac+5",niveaux:["BTS MCO","BUT GEA","Licence Éco-Gestion","École de commerce","Master"],debouches:["Commercial","Contrôleur de gestion","Auditeur","Chef de produit","Consultant","Entrepreneur"],perspective:"medium",perspectiveLabel:"Dynamique",perspectiveDetail:"Les services et le conseil sont des moteurs d'emploi. Le commerce recrute massivement.",reconversion:"Évolution vers le management, la direction commerciale ou l'entrepreneuriat.",secteurs:["Banque","Assurance","Conseil","Grande distribution","E-commerce"],salaires:salFromBase(0.95,0.97,0.96),ecoles:"commerce"},
+  {id:"droit",nom:"Droit & Sciences Politiques",categorie:"droit",tag:"Droit",tagClass:"tag-commerce",duree:"Bac+3 à Bac+5",niveaux:["Licence Droit","Master Droit","Sciences Po","École d'avocats"],debouches:["Avocat","Juriste d'entreprise","Magistrat","Notaire","Chargé d'affaires publiques","Diplomate"],perspective:"medium",perspectiveLabel:"Évolution constante",perspectiveDetail:"Les juristes spécialisés sont particulièrement recherchés dans tous les pays.",reconversion:"Spécialisation possible. Reconversion vers la compliance ou la fonction publique.",secteurs:["Cabinets d'avocats","Entreprises","Administration","Banques","ONG"],salaires:salFromBase(0.90,0.91,0.94),ecoles:"droit"},
+  {id:"arts",nom:"Arts, Design & Communication",categorie:"art",tag:"Créatif",tagClass:"tag-art",duree:"Bac+2 à Bac+5",niveaux:["BTS Design","DNA/DSAA","Licence Arts","École d'art","Master Design"],debouches:["Designer graphique","UX/UI Designer","Directeur artistique","Community manager","Architecte d'intérieur","Motion designer"],perspective:"evolving",perspectiveLabel:"En pleine mutation",perspectiveDetail:"Le design UX/UI et le marketing digital sont les segments les plus porteurs.",reconversion:"Évolution vers la direction artistique ou la stratégie de marque.",secteurs:["Agences","Studios","Entreprises tech","Médias","Freelance"],salaires:salFromBase(0.86,0.84,0.83),ecoles:"arts"},
+  {id:"social",nom:"Social, Éducation & Psychologie",categorie:"social",tag:"Humain",tagClass:"tag-social",duree:"Bac+3 à Bac+5",niveaux:["Licence Sciences de l'éducation","Licence Psycho","Master MEEF","Diplôme d'État"],debouches:["Enseignant","Psychologue","Éducateur spécialisé","Conseiller d'orientation","Travailleur social","Formateur"],perspective:"high",perspectiveLabel:"Besoin croissant",perspectiveDetail:"Les métiers du social et de l'éducation sont prioritaires dans la plupart des pays.",reconversion:"Évolution vers la direction d'établissement ou la formation.",secteurs:["Éducation nationale","Collectivités","Associations","Entreprises"],salaires:salFromBase(0.86,0.78,0.75),ecoles:"social"},
+  {id:"btp",nom:"BTP & Construction",categorie:"science",tag:"Technique",tagClass:"tag-tech",duree:"Bac+2 à Bac+5",niveaux:["BTS Bâtiment","BUT Génie Civil","Licence Pro","École d'ingénieur"],debouches:["Chef de chantier","Conducteur de travaux","Ingénieur BTP","Dessinateur projeteur","Économiste de la construction","Géomètre"],perspective:"high",perspectiveLabel:"Tension forte",perspectiveDetail:"Le BTP recrute massivement partout pour la transition énergétique et les infrastructures.",reconversion:"Évolution vers la direction de projet ou l'expertise technique.",secteurs:["BTP","Immobilier","Énergie","Collectivités","Bureaux d'études"],salaires:salFromBase(0.95,0.97,0.96),ecoles:"btp"},
+  {id:"logistique",nom:"Logistique & Transport",categorie:"tech",tag:"Supply Chain",tagClass:"tag-tech",duree:"Bac+2 à Bac+5",niveaux:["BTS GTLA","BUT QLIO","Licence Pro","Master Logistique"],debouches:["Responsable logistique","Supply chain manager","Chef d'entrepôt","Acheteur","Consultant logistique","Transitaire"],perspective:"medium",perspectiveLabel:"Stable",perspectiveDetail:"Le transport-logistique est un secteur qui recrute dans tous les pays.",reconversion:"Évolution vers la direction supply chain.",secteurs:["E-commerce","Industrie","Grande distribution","Transport"],salaires:salFromBase(0.90,0.91,0.90),ecoles:"logistique"},
+  {id:"communication",nom:"Communication & Marketing Digital",categorie:"art",tag:"Digital",tagClass:"tag-art",duree:"Bac+2 à Bac+5",niveaux:["BTS Communication","BUT Info-Com","Licence Info-Com","Master Marketing"],debouches:["Community manager","Chargé de communication","Chef de projet digital","SEO/SEA manager","Content manager","Growth hacker"],perspective:"evolving",perspectiveLabel:"Mutation digitale",perspectiveDetail:"Le marketing digital et le community management sont très recherchés partout.",reconversion:"Évolution vers la direction marketing ou la stratégie digitale.",secteurs:["Agences","Entreprises","Start-ups","Médias","Freelance"],salaires:salFromBase(0.90,0.91,0.90),ecoles:"communication"},
+  {id:"agro",nom:"Agroalimentaire & Agriculture",categorie:"agro",tag:"Agro",tagClass:"tag-science",duree:"Bac+2 à Bac+5",niveaux:["BTSA","BUT Génie Biologique","Licence Agro","École d'ingénieur Agro"],debouches:["Ingénieur agroalimentaire","Conseiller agricole","Chef de produit alimentaire","Responsable qualité","Agronome"],perspective:"medium",perspectiveLabel:"Recrutement stable",perspectiveDetail:"L'agriculture et l'agroalimentaire recrutent dans tous les pays.",reconversion:"Évolution vers la direction de production ou le conseil.",secteurs:["Coopératives","Industrie agroalimentaire","Exploitations","Recherche"],salaires:salFromBase(0.90,0.88,0.85),ecoles:"agro"},
+  {id:"finance",nom:"Finance, Banque & Assurance",categorie:"commerce",tag:"Finance",tagClass:"tag-commerce",duree:"Bac+3 à Bac+5",niveaux:["Licence Éco-Finance","Master Finance","École de commerce","Actuariat"],debouches:["Analyste financier","Contrôleur de gestion","Auditeur","Banquier d'affaires","Actuaire","Risk manager"],perspective:"medium",perspectiveLabel:"Stable & sélectif",perspectiveDetail:"La finance recrute des profils qualifiés dans les hubs mondiaux.",reconversion:"Évolution vers la direction financière ou le private equity.",secteurs:["Banques","Assurances","Fonds d'investissement","Fintech","Audit"],salaires:salFromBase(1.05,1.06,1.08),ecoles:"finance"},
+  {id:"tourisme",nom:"Tourisme, Hôtellerie & Restauration",categorie:"commerce",tag:"Tourisme",tagClass:"tag-commerce",duree:"Bac+2 à Bac+5",niveaux:["BTS Tourisme","BTS Hôtellerie","Licence Tourisme","Master Tourisme"],debouches:["Guide touristique","Réceptionniste","Chef de cuisine","Directeur d'hôtel","Agent de voyage","Responsable événementiel"],perspective:"medium",perspectiveLabel:"Reprise post-Covid",perspectiveDetail:"Le tourisme connaît une reprise forte. Les destinations africaines attirent de plus en plus.",reconversion:"Évolution vers la direction d'établissement ou l'entrepreneuriat touristique.",secteurs:["Hôtels","Restaurants","Agences de voyage","Écotourisme"],salaires:salFromBase(0.86,0.78,0.77),ecoles:"tourisme"},
+  {id:"hotellerie",nom:"Cuisine & Arts Culinaires",categorie:"commerce",tag:"Culinaire",tagClass:"tag-commerce",duree:"Bac+2 à Bac+3",niveaux:["CAP Cuisine","BTS Hôtellerie-Restauration","Licence Pro"],debouches:["Chef cuisinier","Second de cuisine","Pâtissier","Boulanger","Gérant de restaurant","Chef de partie"],perspective:"high",perspectiveLabel:"Pénurie de talents",perspectiveDetail:"La restauration fait face à une pénurie massive de personnel dans tous les pays francophones.",reconversion:"Évolution vers la direction de restaurant ou l'entrepreneuriat.",secteurs:["Restaurants","Hôtels","Traiteurs","Boulangeries"],salaires:salFromBase(0.86,0.75,0.71),ecoles:"hotellerie"}
+];
+
+/* ═══════════════════════════════════════════════
+   ÉTAT
+   ═══════════════════════════════════════════════ */
+let currentStep = 0;
+const TOTAL_STEPS = 9;
+let profilScores = {A:0,B:0,C:0,D:0,E:0,F:0};
+let profilResult = {dominant:null, secondaire:null};
+let selectedPays = null;
+let diagnosticStarted = false;
+
+/* ═══════════════════════════════════════════════
+   NAVIGATION
+   ═══════════════════════════════════════════════ */
+function goToStep(n){
+  if(n < 0 || n > TOTAL_STEPS) return;
+  if(n >= 1) diagnosticStarted = true;
+
+  document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+  const step = document.querySelector(`.step[data-step="${n}"]`);
+  if(step) step.classList.add('active');
+  currentStep = n;
+  updateProgress();
+  window.scrollTo({top:0, behavior:'smooth'});
+
+  if(n === 1) renderCountries();
+  if(n === 3) renderProfilQuestions();
+  if(n === 4) renderProfilResult();
+  if(n === 5) renderFilieres();
+  if(n === 6) initSimu();
+  if(n === 9) renderSynthese();
+}
+
+function updateProgress(){
+  const pct = (currentStep / TOTAL_STEPS) * 100;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent =
+    currentStep === 0 ? "Intro" : `Étape ${currentStep}/${TOTAL_STEPS}`;
+}
+
+/* ═══════════════════════════════════════════════
+   EXIT
+   ═══════════════════════════════════════════════ */
+function askExit(){
+  if(!diagnosticStarted) return;
+  document.getElementById('confirmOverlay').classList.add('open');
+}
+function closeConfirm(){ document.getElementById('confirmOverlay').classList.remove('open'); }
+function confirmExit(){ closeConfirm(); restart(true); }
+
+/* ═══════════════════════════════════════════════
+   INIT
+   ═══════════════════════════════════════════════ */
+document.addEventListener('DOMContentLoaded', function(){
+  const slider = document.getElementById('clarte');
+  if(slider){
+    slider.addEventListener('input', function(e){
+      document.getElementById('clarteValue').textContent = e.target.value + ' / 10';
+    });
+  }
+
+  const scrollBtn = document.getElementById('scrollTop');
+  window.addEventListener('scroll', () => {
+    if(window.scrollY > 400) scrollBtn.classList.add('visible');
+    else scrollBtn.classList.remove('visible');
+  }, {passive:true});
+
+  document.addEventListener('keydown', (e) => {
+    if(e.target.tagName === 'TEXTAREA' || e.target.tagName === 'INPUT') return;
+    if(e.key === 'ArrowRight' && currentStep < TOTAL_STEPS) goToStep(currentStep + 1);
+    if(e.key === 'ArrowLeft' && currentStep > 0) goToStep(currentStep - 1);
+    if(e.key === 'Escape'){
+      document.getElementById('modalOverlay').classList.remove('open');
+      closeConfirm();
+    }
+  });
+});
+
+/* ═══════════════════════════════════════════════
+   PAYS
+   ═══════════════════════════════════════════════ */
+function renderCountries(filter){
+  const grid = document.getElementById('countryGrid');
+  const f = (filter||'').toLowerCase();
+  const list = f ? PAYS.filter(p => p.nom.toLowerCase().includes(f)) : PAYS;
+  grid.innerHTML = list.map(p => `
+    <div class="country-card" onclick="selectPays('${p.id}', this)">
+      <span class="flag">${p.flag}</span>
+      <div class="name">${p.nom}</div>
+      <div class="currency">${p.devise}</div>
+    </div>
+  `).join('');
+}
+function filterCountries(val){ renderCountries(val); }
+function selectPays(id, el){
+  selectedPays = PAYS.find(p => p.id === id);
+  document.querySelectorAll('.country-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  document.getElementById('btnAfterCountry').disabled = false;
+  renderCountryPanel();
+}
+function renderCountryPanel(){
+  if(!selectedPays) return;
+  const p = selectedPays;
+  const panel = document.getElementById('countryPanel');
+  panel.innerHTML = `
+    <div class="country-panel">
+      <h3>${p.flag} ${p.nom} — Aperçu du marché</h3>
+      <p>${p.emploi}</p>
+      <div style="margin-bottom:14px">
+        <strong style="font-size:.72rem;color:var(--dim);text-transform:uppercase;letter-spacing:1px;font-family:'JetBrains Mono',monospace">Secteurs porteurs</strong>
+        <div class="sector-tags" style="margin-top:8px">
+          ${p.secteurs.map(s=>`<span>${s}</span>`).join('')}
+        </div>
+      </div>
+      <div class="info-note">${p.note}</div>
+    </div>
+
+    <h3 style="color:#fcd34d;font-family:'Syne',sans-serif;font-size:1rem;margin-bottom:14px;display:flex;align-items:center;gap:8px">
+      🎓 Bourses d'études disponibles (${p.bourses.length})
+    </h3>
+    ${p.bourses.map(b=>`
+      <div class="bourse-detailed">
+        <div class="bourse-header">
+          <div class="bourse-icon">🎓</div>
+          <div class="bourse-title-wrap">
+            <div class="bourse-name">${b.nom}</div>
+            <div class="bourse-type">${b.type}</div>
+          </div>
+          <div class="bourse-amount-badge">💰 ${b.montant}</div>
+        </div>
+        <div class="bourse-desc">${b.desc}</div>
+        <div class="bourse-details-grid">
+          <div class="bourse-detail">
+            <div class="lbl">⏱️ Durée</div>
+            <div class="val">${b.duree}</div>
+          </div>
+          <div class="bourse-detail">
+            <div class="lbl">🎯 Niveau</div>
+            <div class="val">${b.niveau}</div>
+          </div>
+          <div class="bourse-detail">
+            <div class="lbl">🌍 Nationalité</div>
+            <div class="val">${b.nationalite}</div>
+          </div>
+          <div class="bourse-detail">
+            <div class="lbl">📅 Date limite</div>
+            <div class="val">${b.deadline}</div>
+          </div>
+        </div>
+        <div style="margin-top:6px;font-size:.72rem;color:var(--dim);text-transform:uppercase;letter-spacing:1px;font-family:'JetBrains Mono',monospace;font-weight:600">Couverture</div>
+        <div class="bourse-coverage">
+          ${b.couverture.map(c=>`<span class="cov-tag">✓ ${c}</span>`).join('')}
+        </div>
+        <a href="${b.lien}" target="_blank" rel="noopener" class="bourse-link">🔗 En savoir plus</a>
+      </div>
+    `).join('')}
+  `;
+}
+
+/* ═══════════════════════════════════════════════
+   PROFIL
+   ═══════════════════════════════════════════════ */
+function renderProfilQuestions(){
+  const c = document.getElementById('profilQuestions');
+  if(c.dataset.rendered) return;
+  c.innerHTML = PROFIL_QUESTIONS.map((item, idx) => `
+    <div class="question">
+      <label class="q-label">${idx+1}. ${item.q}</label>
+      <div class="options">
+        ${Object.entries(item.options).map(([l, t])=>`
+          <label class="option">
+            <input type="radio" name="profil_q${idx}" value="${l}">
+            <span class="option-letter">${l}</span>
+            <span class="option-content">${t}</span>
+          </label>
+        `).join('')}
+      </div>
+    </div>
+  `).join('');
+  c.dataset.rendered = "true";
+}
+function calcProfil(){
+  profilScores = {A:0,B:0,C:0,D:0,E:0,F:0};
+  for(let i=0;i<PROFIL_QUESTIONS.length;i++){
+    const c = document.querySelector(`input[name="profil_q${i}"]:checked`);
+    if(!c){ alert("⚠️ Réponds à toutes les questions."); return; }
+    profilScores[c.value]++;
+  }
+  const sorted = Object.entries(profilScores).sort((a,b)=>b[1]-a[1]);
+  profilResult.dominant = sorted[0][0];
+  profilResult.secondaire = sorted[1][0];
+  goToStep(4);
+}
+function renderProfilResult(){
+  const c = document.getElementById('profilResult');
+  if(!profilResult.dominant){ c.innerHTML = "<p>Complète le test.</p>"; return; }
+  const p = PROFILS[profilResult.dominant];
+  const s = PROFILS[profilResult.secondaire];
+  const clarte = document.getElementById('clarte')?.value || 5;
+  c.innerHTML = `
+    <div style="text-align:center;margin-bottom:20px">
+      <div class="profile-badge">${p.nom}</div>
+      <p style="color:var(--dim);font-size:.83rem">Profil secondaire : <strong style="color:#c4b5fd">${s.nom}</strong> · Pays : <strong style="color:#fcd34d">${selectedPays?.flag} ${selectedPays?.nom}</strong></p>
+    </div>
+    <div class="result-card"><h3>🌟 Tes forces</h3><p style="color:var(--muted);font-size:.88rem">${p.forces}</p></div>
+    <div class="result-card"><h3>🎓 Filières à explorer</h3><ul class="clean">${p.filieres.map(f=>`<li>${f}</li>`).join('')}</ul></div>
+    <div class="result-card"><h3>💼 Métiers possibles</h3><ul class="clean">${p.metiers.map(m=>`<li>${m}</li>`).join('')}</ul></div>
+    <div class="result-card" style="background:linear-gradient(135deg,rgba(244,63,94,.07),rgba(244,63,94,.02));border-color:rgba(244,63,94,.15)">
+      <h3 style="color:#fda4af">⚠️ Piège à éviter</h3><p style="color:var(--muted);font-size:.88rem">${p.piege}</p>
+    </div>
+    <div class="result-card">
+      <h3>📊 Ton score de clarté</h3>
+      <div style="text-align:center;padding:12px 0">
+        <div style="font-size:3rem;font-weight:800;font-family:'Syne',sans-serif;background:linear-gradient(135deg,#c4b5fd,#67e8f9);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent">${clarte}/10</div>
+        <div style="font-size:.72rem;color:var(--dim);text-transform:uppercase;letter-spacing:2px;font-weight:600;margin-top:4px">${clarte<=3?"Boussole à réveiller":clarte<=6?"En chemin":"Cap à préciser"}</div>
+      </div>
+    </div>`;
+}
+
+/* ═══════════════════════════════════════════════
+   FILIÈRES
+   ═══════════════════════════════════════════════ */
+function renderFilieres(filter){
+  const grid = document.getElementById('filieresGrid');
+  const list = (filter && filter!=='all') ? FILIERES.filter(f=>f.categorie===filter) : FILIERES;
+  const pays = selectedPays || PAYS[0];
+  const key = CKEY[pays.id] || 'fr';
+  grid.innerHTML = list.map(f => {
+    const s = f.salaires[key];
+    return `<div class="filiere-card" onclick="openFiliere('${f.id}')">
+      <span class="tag ${f.tagClass}">${f.tag}</span>
+      <h4>${f.nom}</h4>
+      <div class="meta"><span>⏱️ ${f.duree}</span></div>
+      <div class="salary-badge">💰 Dès ${s.d.toLocaleString('fr-FR')} ${pays.symbole}</div>
+      <div class="arrow">→</div>
+    </div>`;
+  }).join('');
+}
+function filterFilieres(cat, btn){
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderFilieres(cat);
+}
+
+/* ═══════════════════════════════════════════════
+   MODAL
+   ═══════════════════════════════════════════════ */
+function openFiliere(id){
+  const f = FILIERES.find(x=>x.id===id);
+  if(!f) return;
+  const pays = selectedPays || PAYS[0];
+  const key = CKEY[pays.id] || 'fr';
+  const s = f.salaires[key];
+  const sym = pays.symbole;
+  const progr = [s.d, s.d*1.1, s.d*1.2, s.m*0.85, s.m, s.m*1.1, s.m*1.2, s.a10*0.9, s.a10*0.95, s.a10];
+  const maxSal = Math.max(...progr);
+  const bars = progr.map((v,i)=>{
+    const h = (v/maxSal)*100;
+    return `<div class="bar-wrap"><div class="bar" style="height:${h}%"></div><div class="bar-label">An ${i+1}</div></div>`;
+  }).join('');
+  const perspClass = f.perspective==='high'?'persp-high':f.perspective==='medium'?'persp-medium':'persp-evolving';
+
+  let ecolesHTML = '';
+  if(f.ecoles && ECOLES[f.ecoles]){
+    const ecolesPays = ECOLES[f.ecoles][pays.id];
+    if(ecolesPays && ecolesPays.length > 0){
+      ecolesHTML = `
+        <div class="modal-section">
+          <h4>🏛️ Écoles prestigieuses — ${pays.flag} ${pays.nom}</h4>
+          ${ecolesPays.map(e=>`
+            <div style="display:flex;align-items:flex-start;gap:12px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.04)">
+              <div style="width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,rgba(124,58,237,.2),rgba(6,182,212,.15));display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;border:1px solid rgba(124,58,237,.2)">🎓</div>
+              <div style="flex:1">
+                <div style="font-weight:600;color:var(--text);font-size:.86rem;margin-bottom:2px">${e.nom}</div>
+                <div style="font-size:.76rem;color:var(--dim)">${e.detail}</div>
+              </div>
+              <span style="padding:3px 10px;border-radius:12px;font-size:.62rem;font-weight:700;text-transform:uppercase;font-family:'JetBrains Mono',monospace;${e.badge==='prestige'?'background:rgba(168,85,247,.15);color:#d8b4fe':e.badge==='public'?'background:rgba(34,197,94,.15);color:#86efac':'background:rgba(245,158,11,.15);color:#fcd34d'}">${e.badge==='prestige'?'Prestige':e.badge==='public'?'Public':'Privé'}</span>
+            </div>
+          `).join('')}
+        </div>`;
+    }
+  }
+
+  const boursesPays = pays.bourses ? pays.bourses.slice(0, 3) : [];
+
+  document.getElementById('modalBody').innerHTML = `
+    <h2>${f.nom}</h2>
+    <p class="modal-sub">${pays.flag} ${pays.nom} · ${f.duree} · ${f.niveaux.join(' · ')}</p>
+
+    <div class="modal-section">
+      <h4>💼 Débouchés principaux (${f.debouches.length} métiers)</h4>
+      <ul class="clean">${f.debouches.map(d=>`<li>${d}</li>`).join('')}</ul>
+    </div>
+
+    <div class="modal-section">
+      <h4>💰 Progression salariale (${sym}/mois net)</h4>
+      <table class="salary-table">
+        <tr><th>Période</th><th>Salaire net mensuel estimé</th></tr>
+        <tr><td>Début de carrière</td><td><strong style="color:#86efac">${Math.round(s.d).toLocaleString('fr-FR')} ${sym}</strong></td></tr>
+        <tr><td>À 3 ans</td><td>${Math.round(progr[2]).toLocaleString('fr-FR')} ${sym}</td></tr>
+        <tr><td>À 5 ans</td><td>${Math.round(s.m).toLocaleString('fr-FR')} ${sym}</td></tr>
+        <tr><td>À 10 ans</td><td><strong style="color:#fcd34d">${Math.round(s.a10).toLocaleString('fr-FR')} ${sym}</strong></td></tr>
+      </table>
+      <div class="progress-viz">${bars}</div>
+    </div>
+
+    <div class="modal-section">
+      <h4>📈 Perspectives — ${pays.flag} ${pays.nom}</h4>
+      <span class="perspective-tag ${perspClass}">${f.perspectiveLabel}</span>
+      <p style="margin-top:10px;font-size:.83rem;color:var(--muted)">${f.perspectiveDetail}</p>
+    </div>
+
+    <div class="modal-section">
+      <h4>🔄 Reconversion possible</h4>
+      <p style="font-size:.83rem;color:var(--muted)">${f.reconversion}</p>
+    </div>
+
+    <div class="modal-section">
+      <h4>🏢 Secteurs d'activité</h4>
+      <div>${f.secteurs.map(x=>`<span style="display:inline-block;padding:5px 12px;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;margin:3px;font-size:.76rem;color:var(--muted)">${x}</span>`).join('')}</div>
+    </div>
+
+    ${ecolesHTML}
+
+    ${boursesPays.length > 0 ? `
+    <div class="modal-section">
+      <h4>🎓 Bourses recommandées pour cette filière</h4>
+      ${boursesPays.map(b=>`
+        <div style="background:rgba(245,158,11,.06);border:1px solid rgba(245,158,11,.15);border-radius:10px;padding:12px 14px;margin-bottom:8px">
+          <div style="font-weight:600;color:#fcd34d;font-size:.85rem;margin-bottom:4px">${b.nom}</div>
+          <div style="font-size:.78rem;color:var(--muted);margin-bottom:6px">${b.desc.substring(0, 140)}...</div>
+          <div style="font-size:.72rem;color:#86efac;font-weight:600;font-family:'JetBrains Mono',monospace">💰 ${b.montant}</div>
+        </div>
+      `).join('')}
+    </div>` : ''}
+
+    ${pays.note?`<div class="modal-section"><h4>💡 Le savais-tu ?</h4><p style="font-size:.83rem;color:var(--muted);padding:12px;background:rgba(124,58,237,.06);border-radius:10px;border-left:3px solid var(--primary)">${pays.note}</p></div>`:''}
+  `;
+  document.getElementById('modalOverlay').classList.add('open');
+}
+function closeModal(e){
+  if(e && e.target !== document.getElementById('modalOverlay')) return;
+  document.getElementById('modalOverlay').classList.remove('open');
+}
+
+/* ═══════════════════════════════════════════════
+   SIMULATEUR
+   ═══════════════════════════════════════════════ */
+function initSimu(){
+  const sel = document.getElementById('simuFiliere');
+  if(sel.options.length===0){
+    sel.innerHTML = FILIERES.map(f=>`<option value="${f.id}">${f.nom}</option>`).join('');
+  }
+  updateSimu();
+}
+function updateSimu(){
+  const id = document.getElementById('simuFiliere').value;
+  const f = FILIERES.find(x=>x.id===id);
+  if(!f) return;
+  const pays = selectedPays || PAYS[0];
+  const key = CKEY[pays.id] || 'fr';
+  const s = f.salaires[key];
+  const sym = pays.symbole;
+  const progr = [s.d, s.d*1.1, s.d*1.2, s.m*0.85, s.m, s.m*1.1, s.m*1.2, s.a10*0.9, s.a10*0.95, s.a10];
+  const maxSal = Math.max(...progr);
+  const bars = progr.map((v,i)=>{
+    const h = (v/maxSal)*100;
+    return `<div class="bar-wrap"><div class="bar" style="height:${h}%"></div><div class="bar-label">An ${i+1}</div></div>`;
+  }).join('');
+  const totalGain = progr.reduce((a,b)=>a+b,0)*12;
+
+  document.getElementById('simuResult').innerHTML = `
+    <div class="result-card">
+      <h3>${pays.flag} ${f.nom} — ${pays.nom}</h3>
+      <p style="color:var(--dim);margin-bottom:16px;font-size:.83rem">${f.duree} · ${f.niveaux.join(' · ')}</p>
+      <div class="info-grid" style="margin-bottom:16px">
+        <div class="info-box"><h4>💵 Salaire débutant</h4><p style="font-size:1.15rem;font-weight:800;color:#86efac;font-family:'Syne',sans-serif">${Math.round(s.d).toLocaleString('fr-FR')} ${sym}</p><p style="font-size:.68rem;color:var(--dim)">net/mois</p></div>
+        <div class="info-box"><h4>📊 Salaire médian</h4><p style="font-size:1.15rem;font-weight:800;color:#c4b5fd;font-family:'Syne',sans-serif">${Math.round(s.m).toLocaleString('fr-FR')} ${sym}</p><p style="font-size:.68rem;color:var(--dim)">net/mois à 5 ans</p></div>
+        <div class="info-box"><h4>🚀 Salaire à 10 ans</h4><p style="font-size:1.15rem;font-weight:800;color:#fcd34d;font-family:'Syne',sans-serif">${Math.round(s.a10).toLocaleString('fr-FR')} ${sym}</p><p style="font-size:.68rem;color:var(--dim)">net/mois</p></div>
+      </div>
+      <h4 style="color:#c4b5fd;margin-bottom:10px;font-size:.75rem;text-transform:uppercase;letter-spacing:1.2px;font-family:'JetBrains Mono',monospace">📈 Progression sur 10 ans</h4>
+      <div class="progress-viz">${bars}</div>
+      <div style="margin-top:14px;padding:14px;background:rgba(34,197,94,.06);border-radius:12px;border-left:3px solid var(--success)">
+        <strong style="color:#86efac;font-size:.88rem">💡 Revenu cumulé estimé sur 10 ans :</strong>
+        <span style="color:var(--muted);font-size:.88rem"> ${Math.round(totalGain).toLocaleString('fr-FR')} ${sym} net</span>
+      </div>
+    </div>`;
+}
+
+/* ═══════════════════════════════════════════════
+   ERREURS
+   ═══════════════════════════════════════════════ */
+function showErreurScore(){
+  const checked = document.querySelectorAll('.erreur:checked').length;
+  const box = document.getElementById('erreurScore');
+  let msg="", color="var(--success)";
+  if(checked===0) msg="🎉 Excellent ! Tu sembles éviter les pièges classiques.";
+  else if(checked<=2){ msg="👍 Bon départ, mais reste vigilant."; color="var(--accent)"; }
+  else if(checked<=4){ msg="⚠️ Plusieurs pièges te guettent. Ralentis et réfléchis."; color="var(--accent)"; }
+  else { msg="🚨 Trop de risques détectés. Fais-toi accompagner."; color="var(--danger)"; }
+  box.innerHTML = `<div class="result-card" style="margin-top:20px;border-color:${color}"><h3 style="color:${color}">Score de risque : ${checked} / 8</h3><p style="color:var(--muted);font-size:.88rem">${msg}</p></div>`;
+  setTimeout(()=>goToStep(8), 1800);
+}
+
+/* ═══════════════════════════════════════════════
+   SYNTHÈSE
+   ═══════════════════════════════════════════════ */
+function renderSynthese(){
+  const statut = document.querySelector('input[name="statut"]:checked')?.value || "—";
+  const situation = document.querySelector('input[name="situation"]:checked')?.value || "—";
+  const besoin = document.querySelector('input[name="besoin"]:checked')?.value || "—";
+  const clarte = document.getElementById('clarte')?.value || "—";
+  const erreurs = document.querySelectorAll('.erreur:checked').length;
+  const actions = document.querySelectorAll('.action:checked').length;
+  const p = profilResult.dominant ? PROFILS[profilResult.dominant] : null;
+  const pays = selectedPays || PAYS[0];
+
+  document.getElementById('synthese').innerHTML = `
+    <div class="result-card">
+      <h3>🌍 Mon pays</h3>
+      <div class="summary-row"><span>Pays sélectionné</span><strong>${pays.flag} ${pays.nom}</strong></div>
+      <div class="summary-row"><span>Devise</span><strong>${pays.devise}</strong></div>
+      <div class="summary-row"><span>Salaire minimum</span><strong>${pays.salaireMin}</strong></div>
+      <div class="summary-row"><span>Secteurs porteurs</span><strong>${pays.secteurs.slice(0,3).join(', ')}</strong></div>
+    </div>
+    <div class="result-card">
+      <h3>👤 Mon profil</h3>
+      <div class="summary-row"><span>Statut</span><strong>${statut}</strong></div>
+      <div class="summary-row"><span>Situation</span><strong>${situation}</strong></div>
+      <div class="summary-row"><span>Besoin prioritaire</span><strong>${besoin}</strong></div>
+      <div class="summary-row"><span>Score de clarté</span><strong>${clarte}/10</strong></div>
+      <div class="summary-row"><span>Profil dominant</span><strong>${p?p.nom:"—"}</strong></div>
+      <div class="summary-row"><span>Profil secondaire</span><strong>${profilResult.secondaire?PROFILS[profilResult.secondaire].nom:"—"}</strong></div>
+    </div>
+    <div class="result-card">
+      <h3>🎯 Pistes à explorer</h3>
+      ${p?`<ul class="clean">${p.filieres.slice(0,3).map(f=>`<li>${f}</li>`).join('')}</ul>`:"<p style='color:var(--dim)'>Complète le test.</p>"}
+    </div>
+    <div class="result-card">
+      <h3>🎓 Bourses prioritaires dans ton pays</h3>
+      <ul class="clean">${pays.bourses.slice(0,4).map(b=>`<li><strong style="color:#fcd34d">${b.nom}</strong> — ${b.montant} · <span style="color:#86efac">${b.deadline}</span></li>`).join('')}</ul>
+      <p style="margin-top:10px;font-size:.82rem;color:var(--dim)">💡 Consulte la page pays pour voir toutes les bourses (${pays.bourses.length} disponibles).</p>
+    </div>
+    <div class="result-card">
+      <h3>📈 Mon avancement</h3>
+      <div class="summary-row"><span>Points de vigilance</span><strong>${erreurs} / 8</strong></div>
+      <div class="summary-row"><span>Actions engagées</span><strong>${actions} / 12</strong></div>
+    </div>
+    <div class="result-card">
+      <h3>🚀 Mon premier pas</h3>
+      <p style="color:var(--muted);font-size:.88rem">👉 <strong style="color:#c4b5fd">${p?`Explorer en priorité : ${p.filieres[0]}`:"Compléter mon profil"}</strong> — dans ${pays.flag} ${pays.nom}</p>
+      <p style="margin-top:8px;color:var(--muted);font-size:.88rem">Et contacter dès cette semaine un professionnel ou un conseiller d'orientation.</p>
+    </div>`;
+}
+
+/* ═══════════════════════════════════════════════
+   RESET
+   ═══════════════════════════════════════════════ */
+function restart(silent){
+  if(!silent && !confirm("Refaire tout le diagnostic ?")) return;
+  document.querySelectorAll('input[type="radio"]').forEach(r=>r.checked=false);
+  document.querySelectorAll('input[type="checkbox"]').forEach(c=>c.checked=false);
+  document.querySelectorAll('textarea').forEach(t=>t.value="");
+  const slider = document.getElementById('clarte');
+  if(slider){ slider.value=5; document.getElementById('clarteValue').textContent="5 / 10"; }
+  profilScores={A:0,B:0,C:0,D:0,E:0,F:0};
+  profilResult={dominant:null,secondaire:null};
+  selectedPays=null;
+  diagnosticStarted=false;
+  document.getElementById('erreurScore').innerHTML="";
+  document.getElementById('countryPanel').innerHTML="";
+  document.querySelectorAll('.country-card').forEach(c=>c.classList.remove('selected'));
+  document.getElementById('btnAfterCountry').disabled=true;
+  goToStep(0);
+}
+
+updateProgress();
+</script>
+</body>
+</html>
